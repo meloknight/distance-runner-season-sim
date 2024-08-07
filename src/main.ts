@@ -1,66 +1,113 @@
 import "./style.css";
+import {
+  normDist,
+  boundedNormDist,
+  roundToChosenDecimal,
+} from "./utility_functions";
+
+const first_names = [
+  "Willis",
+  "Timmy",
+  "Bilbo",
+  "Erevis",
+  "Sanic",
+  "Thomathy",
+  "Speedy",
+  "X-301",
+  "Mach",
+  "Chadley",
+  "Hailey",
+  "Kaley",
+  "Lily",
+  "Matthew",
+  "Chris",
+  "Alex",
+  "Miku",
+  "Spike",
+  "Delainie",
+  "Cegi",
+  "Saitama",
+  "Brody",
+  "John",
+  "Hank",
+];
+
+const last_names = [
+  "Fimbleton",
+  "Whipplewomp",
+  "Knight",
+  "Vu",
+  "Schmakeit",
+  "Hong",
+  "Chen",
+  "Johnson",
+  "Wilson",
+  "Smith",
+  "Williams",
+  "Muller",
+  "Martinez",
+  "White",
+  "Anderson",
+  "Moore",
+  "Hall",
+  "Hill",
+  "Green",
+  "Adams",
+  "King",
+  "Nelson",
+];
+
 // class notes
 // public - accessible from inside or outside the class object
 // private - accessible only from within the class object for other variables / methods to use
 // static - belong to the class itself rather than instances of it so Player.staticProperty rather than player1.staticProperty
 
-// Box-Muller Transform is used to derive a single value pulled from a normal distribution
-function normDist(mean: number, standardDeviation: number): number {
-  const u1 = Math.random();
-  const u2 = Math.random();
-  const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-  return z0 * standardDeviation + mean;
-}
-
-// upper and lower bounds are inclusive
-function boundedNormDist(
-  mean: number,
-  standardDeviation: number,
-  lowerBound: number,
-  upperBound: number
-): number {
-  let value = normDist(mean, standardDeviation);
-  while (value <= lowerBound || value >= upperBound) {
-    value = normDist(mean, standardDeviation);
-  }
-  return value;
-}
-
-function roundToChosenDecimal(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
-}
-
 class Runner {
   public age: number;
-  public player_id: number;
+  public runner_id: number;
   public wins: number;
   public losses: number;
+  public first_name: string;
+  public last_name: string;
 
-  public physFactor: number;
-  public trainingFactor: number;
-  public nutriFactor: number;
-  // public psychFactor: number;
-  // public biomechFactor: number;
-  // public geneFactor: number;
+  public phys_factor: number;
+  public training_factor: number;
+  public nutri_factor: number;
+  public psych_factor: number;
+  public biomech_factor: number;
+  public gene_factor: number;
 
   // Perhaps could randomly decide if a runner prefers road/trail AND what weather they perform best in (most will be moderate weather)
-  // public envFactor: number;
+  // envFactor
+  public preferredTerrain: string;
+  public preferredWeather: string;
 
-  // I think the nutriFactor should be determined from a score on the team aka a team may have dialed in nutrition or not.
-  constructor(player_id: number) {
+  constructor(runner_id: number) {
     this.age = this.determineAge();
-    this.player_id = player_id;
+    this.runner_id = runner_id;
     this.wins = 0;
     this.losses = 0;
-    this.physFactor = this.determinePhysFactor(this.age);
-    this.trainingFactor = this.determineTrainingFactor();
-    this.nutriFactor = this.determineNutriFactor();
+    this.first_name = this.determineName(first_names);
+    this.last_name = this.determineName(last_names);
+    this.phys_factor = this.determinePhysFactor(this.age);
+    this.training_factor = this.determineTrainingFactor();
+    this.nutri_factor = this.determineNutriFactor();
+    this.psych_factor = this.determinePsychFactor();
+    this.biomech_factor = this.determineBiomechFactor();
+    this.gene_factor = this.determineGeneFactor();
+    this.preferredTerrain = this.determineTerrainPreference();
+    this.preferredWeather = this.determineWeatherPreference();
   }
 
   private determineAge(): number {
     let unroundedAge = boundedNormDist(30, 9, 16, 110);
     return roundToChosenDecimal(unroundedAge, 0);
+  }
+
+  private determineName(name_array: string[]): string {
+    const arr_length: number = name_array.length;
+    const rand_index: number = Math.floor(Math.random() * arr_length);
+    return name_array[rand_index];
   }
 
   private determinePhysFactor(age: number): number {
@@ -82,10 +129,54 @@ class Runner {
   private determineNutriFactor(): number {
     return roundToChosenDecimal(boundedNormDist(150, 10, 100, 200), 0);
   }
+
+  private determinePsychFactor(): number {
+    return roundToChosenDecimal(boundedNormDist(100, 40, 70, 200), 0);
+  }
+
+  private determineBiomechFactor(): number {
+    return roundToChosenDecimal(boundedNormDist(150, 10, 110, 200), 0);
+  }
+
+  private determineGeneFactor(): number {
+    return roundToChosenDecimal(boundedNormDist(100, 30, 70, 200), 0);
+  }
+
+  private determineTerrainPreference(): string {
+    // Possible terrains are road or trail
+    const rand_num: number = Math.floor(Math.random() * 2);
+    if (rand_num === 0) return "road";
+    else return "trail";
+  }
+
+  private determineWeatherPreference(): string {
+    // Possible weathers are moderate, hot, cold, or rainy
+    const rand_num: number = Math.floor(Math.random() * 4);
+    switch (rand_num) {
+      case 0:
+        return "moderate";
+      case 1:
+        return "hot";
+      case 2:
+        return "cold";
+      case 3:
+        return "rainy";
+    }
+    return "empty plane or existence";
+  }
+
+  public describeRunner(): void {
+    console.log(
+      `Hello! My name is ${this.first_name} ${this.last_name} ` +
+        `and my runner ID is ${this.runner_id}. I am ${this.age} years old. ` +
+        `I have ${this.wins} wins and ${this.losses} losses. ` +
+        `My Physical Factor is ${this.phys_factor}.`
+    );
+  }
 }
 
 const runner1 = new Runner(1004);
-console.log(runner1.trainingFactor);
+runner1.describeRunner();
 
 // class Team {
 //   public team_id: number;
