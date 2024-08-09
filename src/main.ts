@@ -28,6 +28,7 @@ class Runner {
   public skill_class_marathon: number;
   public skill_class_100mile: number;
 
+  public runners_preferred_distance: string[];
   // Perhaps could randomly decide if a runner prefers road/trail AND what weather they perform best in (most will be moderate weather)
   // envFactor
   public preferredTerrain: string;
@@ -55,6 +56,8 @@ class Runner {
     this.skill_class_half_marathon = this.determineSkillClass("half marathon");
     this.skill_class_marathon = this.determineSkillClass("marathon");
     this.skill_class_100mile = this.determineSkillClass("100 mile");
+
+    this.runners_preferred_distance = this.determineDistancePreferrence();
   }
 
   private determineAge(): number {
@@ -128,6 +131,29 @@ class Runner {
     return 5;
   }
 
+  private determineDistancePreferrence(): string[] {
+    const index_set: Set<number> = new Set();
+    const distances: string[] = [
+      "5 km",
+      "10 km",
+      "half marathon",
+      "marathon",
+      "100 mile",
+    ];
+    let res: string[] = [];
+
+    while (index_set.size < distances.length) {
+      const index: number = Math.floor(Math.random() * distances.length);
+      if (index_set.has(index)) {
+        continue;
+      }
+      res.push(distances[index]);
+      index_set.add(index);
+    }
+
+    return res;
+  }
+
   private determinePhysFactor(age: number): number {
     let physMod: number = 0;
     if (age < 30) {
@@ -199,6 +225,7 @@ class Runner {
 
 const runner1 = new Runner(1004);
 runner1.describeRunner();
+console.log(runner1.runners_preferred_distance);
 
 // class Team {
 //   public team_id: number;
