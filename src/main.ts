@@ -1,5 +1,10 @@
 import "./style.css";
-import { boundedNormDist, roundToChosenDecimal } from "./utility_functions";
+import {
+  boundedNormDist,
+  roundToChosenDecimal,
+  determineWeather,
+  determineTerrain,
+} from "./utility_functions";
 import { first_names, last_names } from "./names";
 
 // class notes
@@ -150,7 +155,6 @@ class Runner {
       res.push(distances[index]);
       index_set.add(index);
     }
-
     return res;
   }
 
@@ -188,25 +192,12 @@ class Runner {
 
   private determineTerrainPreference(): string {
     // Possible terrains are road or trail
-    const rand_num: number = Math.floor(Math.random() * 2);
-    if (rand_num === 0) return "road";
-    else return "trail";
+    return determineTerrain();
   }
 
   private determineWeatherPreference(): string {
     // Possible weathers are moderate, hot, cold, or rainy
-    const rand_num: number = Math.floor(Math.random() * 4);
-    switch (rand_num) {
-      case 0:
-        return "moderate";
-      case 1:
-        return "hot";
-      case 2:
-        return "cold";
-      case 3:
-        return "rainy";
-    }
-    return "empty plane or existence";
+    return determineWeather();
   }
 
   public describeRunner(): void {
@@ -223,55 +214,79 @@ class Runner {
   }
 }
 
-const runner1 = new Runner(1004);
-runner1.describeRunner();
-console.log(runner1.runners_preferred_distance);
+// const runner1 = new Runner(1004);
+// runner1.describeRunner();
+// console.log(runner1.runners_preferred_distance);
 
-// class Team {
-//   public team_id: number;
-//   public team_members: any[];
+class Team {
+  public team_id: number;
+  public team_members: any[];
 
-//   constructor(team_id: number) {
-//     this.team_id = team_id;
-//     this.team_members = this.generateTeam();
-//   }
+  constructor(team_id: number) {
+    this.team_id = team_id;
+    this.team_members = this.generateTeam();
+  }
 
-//   private generateTeam(): any[] {
-//     const generated_team: any[] = [];
-//     for (let i = 1; i <= 8; i++) {
-//       const age_class_generator = Math.floor(Math.random() * (10 + 1));
-//       const age = 50;
-//       const player_id_generator = 1000 + i;
-//       generated_team.push(
-//         new Runner(age_class_generator, age, player_id_generator, 0, 0)
-//       );
-//     }
-//     return generated_team;
-//   }
-// })();
+  private generateTeam(): any[] {
+    const generated_team: any[] = [];
+    for (let i = 1; i <= 8; i++) {
+      const runner_id_generator = this.team_id + i;
+      generated_team.push(new Runner(runner_id_generator));
+    }
+    return generated_team;
+  }
+}
 
-// class Conference {
-//   public conference_id: number;
-//   public generated_conference: any;
+// const team1 = new Team(3000);
+// console.log(team1.team_members);
 
-//   constructor(conference_id: number) {
-//     this.conference_id = conference_id;
-//     this.generated_conference = this.generateConference();
-//   }
+class Conference {
+  public conference_id: number;
+  public generated_conference: any;
 
-//   private generateConference(): any[] {
-//     const generated_conference: any[] = [];
-//     for (let i = 1; i <= 20; i++) {
-//       const team_id: number = i * 1000;
-//       generated_conference.push(new Team(team_id));
-//     }
-//     return generated_conference;
-//   }
-// }
+  constructor(conference_id: number) {
+    this.conference_id = conference_id;
+    this.generated_conference = this.generateConference();
+  }
 
-// class IndividualRace {
-//   public race_id: number;
-// }
+  private generateConference(): any[] {
+    const generated_conference: any[] = [];
+    for (let i = 1; i <= 20; i++) {
+      const team_id: number = i * 1000;
+      generated_conference.push(new Team(team_id));
+    }
+    return generated_conference;
+  }
+}
+
+const conference1 = new Conference(1);
+console.log(conference1.generated_conference);
+
+class IndividualRace {
+  public race_id: number;
+  public runner_list: any[];
+  public race_weather: string;
+  public race_terrain: string;
+
+  constructor(race_id: number, runner_list: any[]) {
+    this.race_id = race_id;
+    this.runner_list = runner_list;
+    this.race_weather = this.generateRaceWeather();
+    this.race_terrain = this.generateRaceTerrain();
+  }
+
+  private generateRaceWeather(): string {
+    return determineWeather();
+  }
+
+  private generateRaceTerrain(): string {
+    return determineTerrain();
+  }
+
+  private modifyRunnersByRacedayEnvironment(): any[] {}
+
+  private generateWinners(): any[] {}
+}
 
 // class Schedule {
 // current plan is to have a race event every 2 weeks. A race event can have 3 to 8 races in it.

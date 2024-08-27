@@ -24,3 +24,26 @@ export function roundToChosenDecimal(value: number, decimals: number): number {
   const factor = Math.pow(10, decimals);
   return Math.round(value * factor) / factor;
 }
+
+export function determineWeather(): string {
+  // Possible weathers are moderate, hot, cold, or rainy
+  const rand_num: number = Math.floor(Math.random() * 4);
+  switch (rand_num) {
+    case 0:
+      return "moderate";
+    case 1:
+      return "hot";
+    case 2:
+      return "cold";
+    case 3:
+      return "rainy";
+  }
+  return "moderate";
+}
+
+export function determineTerrain(): string {
+  // Possible terrains are road or trail
+  const rand_num: number = Math.floor(Math.random() * 2);
+  if (rand_num === 0) return "road";
+  else return "trail";
+}
