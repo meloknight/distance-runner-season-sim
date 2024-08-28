@@ -4,6 +4,7 @@ import {
   roundToChosenDecimal,
   determineWeather,
   determineTerrain,
+  determineRaceDistance,
 } from "./utility_functions";
 import { first_names, last_names } from "./names";
 
@@ -273,48 +274,97 @@ const conference1 = new Conference(1);
 
 class IndividualRace {
   public race_id: number;
+  public race_distance: string;
   public runner_list: any[];
   public race_weather: string;
   public race_terrain: string;
   public race_info: any;
-  public raceday_runner_stats: any[];
 
   constructor(race_id: number, runner_list: any[]) {
+    // we want the updated runner stats to be pushed into raceday_runner_stats
+    // These stats take weather and terrain into account and then
     this.race_id = race_id;
+    this.race_distance = determineRaceDistance();
     this.runner_list = runner_list;
-    this.race_weather = this.generateRaceWeather();
-    this.race_terrain = this.generateRaceTerrain();
-    this.raceday_runner_stats = [];
-    this.modifyRunnersByRacedayEnvironment();
-    // this.race_info = {
-    //   race_id: this.race_id,
-    //   race_weather,
-    // };
-  }
-
-  private generateRaceWeather(): string {
-    return determineWeather();
-  }
-
-  private generateRaceTerrain(): string {
-    return determineTerrain();
+    this.race_weather = determineWeather();
+    this.race_terrain = determineTerrain();
+    this.determineRacedaySkillClass();
+    this.determinePlacements();
   }
 
   public displayGeneratedConference() {
     console.log(conference1.generated_conference[12]);
   }
 
-  private modifyRunnersByRacedayEnvironment(): any {
-    this.runner_list.forEach(() => {
-      //forRach runner in the runner_list
-      this.raceday_runner_stats.push({
-        //push the runner stats into this array
-        hello: "hello",
+  private determineRacedaySkillClass(): any {
+    this.runner_list.forEach((runner) => {
+      //forEach runner in the runner_list
+
+      const weatherModifier = (): number => {
+        if (this.race_weather === runner.preferredWeather) {
+          return 1.1;
+        } else {
+          return 1;
+        }
+      };
+      const runner_weather_modifier: number = weatherModifier();
+
+      const terrainModifier = (): number => {
+        if (this.race_terrain === runner.preferredTerrain) {
+          return 1.1;
+        } else {
+          return 1;
+        }
+      };
+      const runner_terrain_modifier: number = terrainModifier();
+
+      let runner_unmodified_skill_class: number;
+      switch (this.race_distance) {
+        case "5 km":
+          runner_unmodified_skill_class = runner.skill_class_5km;
+          break;
+        case "10 km":
+          runner_unmodified_skill_class = runner.skill_class_10km;
+          break;
+        case "half marathon":
+          runner_unmodified_skill_class = runner.skill_class_half_marathon;
+          break;
+        case "marathon":
+          runner_unmodified_skill_class = runner.skill_class_marathon;
+          break;
+        case "100 mile":
+          runner_unmodified_skill_class = runner.skill_class_100mile;
+          break;
+        default:
+          runner_unmodified_skill_class = 0;
+      }
+
+      const runner_raceday_luck: number = boundedNormDist(1, 0.08, 0.8, 1.2);
+
+      const runner_modified_skill_class = Math.floor(
+        runner_weather_modifier *
+          runner_terrain_modifier *
+          runner_raceday_luck *
+          runner_unmodified_skill_class
+      );
+
+      runner.race_info_for_runner.push({
+        race_id: this.race_id,
+        runner_weather_modifier: runner_weather_modifier,
+        runner_terrain_modifier: runner_terrain_modifier,
+        runner_raceday_luck: runner_raceday_luck,
+        runner_unmodified_skillclass: runner_unmodified_skill_class,
+        runner_modified_skill_class: runner_modified_skill_class,
+        placement: "N/A", // placements are gold, silver, bronze, did not place, N/A
       });
     });
   }
 
-  // private generateWinners(): any[] {}
+  // private determinePlacements(): any {
+  //   this.runner_list.forEach((runner) => {
+  //     runner.race_info_for_runner.filter
+  //   });
+  // }
 }
 
 const race1 = new IndividualRace(1, [
@@ -325,7 +375,10 @@ const race1 = new IndividualRace(1, [
   conference1.generated_conference[3].team_members[3],
 ]);
 // race1.displayGeneratedConference();
-console.log(race1.raceday_runner_stats);
+// console.log(race1.raceday_runner_stats);
+console.log(
+  conference1.generated_conference[1].team_members[1].race_info_for_runner[0]
+);
 
 // class Schedule {
 // current plan is to have a race event every 2 weeks. A race event can have 3 to 8 races in it.

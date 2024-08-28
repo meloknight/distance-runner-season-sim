@@ -25,6 +25,24 @@ export function roundToChosenDecimal(value: number, decimals: number): number {
   return Math.round(value * factor) / factor;
 }
 
+export function determineRaceDistance(): string {
+  // Possible weathers are moderate, hot, cold, or rainy
+  const rand_num: number = Math.floor(Math.random() * 5);
+  switch (rand_num) {
+    case 0:
+      return "5 km";
+    case 1:
+      return "10 km";
+    case 2:
+      return "half marathon";
+    case 3:
+      return "marathon";
+    case 4:
+      return "100 mile";
+  }
+  return "5 km";
+}
+
 export function determineWeather(): string {
   // Possible weathers are moderate, hot, cold, or rainy
   const rand_num: number = Math.floor(Math.random() * 4);
