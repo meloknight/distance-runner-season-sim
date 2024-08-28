@@ -17,8 +17,12 @@ class Runner {
   public runner_id: number;
   public wins: number;
   public losses: number;
+  public golds: number;
+  public silvers: number;
+  public bronzes: number;
   public first_name: string;
   public last_name: string;
+  public race_info_for_runner: any[];
 
   public phys_factor: number;
   public training_factor: number;
@@ -44,8 +48,12 @@ class Runner {
     this.runner_id = runner_id;
     this.wins = 0;
     this.losses = 0;
+    this.golds = 0;
+    this.silvers = 0;
+    this.bronzes = 0;
     this.first_name = this.determineName(first_names);
     this.last_name = this.determineName(last_names);
+    this.race_info_for_runner = [];
 
     this.phys_factor = this.determinePhysFactor(this.age);
     this.training_factor = this.determineTrainingFactor();
@@ -204,7 +212,7 @@ class Runner {
     console.log(
       `Hello! My name is ${this.first_name} ${this.last_name} ` +
         `and my runner ID is ${this.runner_id}. I am ${this.age} years old. ` +
-        `I have ${this.wins} wins and ${this.losses} losses. ` +
+        `I have ${this.golds} golds, ${this.silvers} silvers, and ${this.bronzes} bronzes. ` +
         `My 5km Skill Class is ${this.skill_class_5km}. ` +
         `My 10km Skill Class is ${this.skill_class_10km}. ` +
         `My half marathon Skill Class is ${this.skill_class_half_marathon}. ` +
@@ -259,20 +267,29 @@ class Conference {
   }
 }
 
+// Generate the conference and all the info
 const conference1 = new Conference(1);
-console.log(conference1.generated_conference);
+// console.log(conference1.generated_conference);
 
 class IndividualRace {
   public race_id: number;
   public runner_list: any[];
   public race_weather: string;
   public race_terrain: string;
+  public race_info: any;
+  public raceday_runner_stats: any[];
 
   constructor(race_id: number, runner_list: any[]) {
     this.race_id = race_id;
     this.runner_list = runner_list;
     this.race_weather = this.generateRaceWeather();
     this.race_terrain = this.generateRaceTerrain();
+    this.raceday_runner_stats = [];
+    this.modifyRunnersByRacedayEnvironment();
+    // this.race_info = {
+    //   race_id: this.race_id,
+    //   race_weather,
+    // };
   }
 
   private generateRaceWeather(): string {
@@ -283,10 +300,32 @@ class IndividualRace {
     return determineTerrain();
   }
 
-  private modifyRunnersByRacedayEnvironment(): any[] {}
+  public displayGeneratedConference() {
+    console.log(conference1.generated_conference[12]);
+  }
 
-  private generateWinners(): any[] {}
+  private modifyRunnersByRacedayEnvironment(): any {
+    this.runner_list.forEach(() => {
+      //forRach runner in the runner_list
+      this.raceday_runner_stats.push({
+        //push the runner stats into this array
+        hello: "hello",
+      });
+    });
+  }
+
+  // private generateWinners(): any[] {}
 }
+
+const race1 = new IndividualRace(1, [
+  conference1.generated_conference[1].team_members[1],
+  conference1.generated_conference[5].team_members[4],
+  conference1.generated_conference[11].team_members[0],
+  conference1.generated_conference[1].team_members[7],
+  conference1.generated_conference[3].team_members[3],
+]);
+// race1.displayGeneratedConference();
+console.log(race1.raceday_runner_stats);
 
 // class Schedule {
 // current plan is to have a race event every 2 weeks. A race event can have 3 to 8 races in it.
