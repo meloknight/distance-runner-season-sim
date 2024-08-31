@@ -23,6 +23,7 @@ class Runner {
   public bronzes: number;
   public first_name: string;
   public last_name: string;
+  public current_runner_modified_skill_class: number;
   public race_info_for_runner: any[];
 
   public phys_factor: number;
@@ -55,6 +56,7 @@ class Runner {
     this.first_name = this.determineName(first_names);
     this.last_name = this.determineName(last_names);
     this.race_info_for_runner = [];
+    this.current_runner_modified_skill_class = 1;
 
     this.phys_factor = this.determinePhysFactor(this.age);
     this.training_factor = this.determineTrainingFactor();
@@ -278,12 +280,19 @@ class IndividualRace {
   public runner_list: any[];
   public race_weather: string;
   public race_terrain: string;
-  public race_info: any;
+  public gold_runner_id: number;
+  public silver_runner_id: number;
+  public bronze_runner_id: number;
+  public race_date: Date;
 
-  constructor(race_id: number, runner_list: any[]) {
+  constructor(race_id: number, runner_list: any[], race_date: Date) {
     // we want the updated runner stats to be pushed into raceday_runner_stats
     // These stats take weather and terrain into account and then
     this.race_id = race_id;
+    this.race_date = race_date;
+    this.gold_runner_id = -1;
+    this.silver_runner_id = -1;
+    this.bronze_runner_id = -1;
     this.race_distance = determineRaceDistance();
     this.runner_list = runner_list;
     this.race_weather = determineWeather();
@@ -298,8 +307,6 @@ class IndividualRace {
 
   private determineRacedaySkillClass(): any {
     this.runner_list.forEach((runner) => {
-      //forEach runner in the runner_list
-
       const weatherModifier = (): number => {
         if (this.race_weather === runner.preferredWeather) {
           return 1.1;
@@ -348,6 +355,8 @@ class IndividualRace {
           runner_unmodified_skill_class
       );
 
+      runner.current_runner_modified_skill_class = runner_modified_skill_class;
+
       runner.race_info_for_runner.push({
         race_id: this.race_id,
         runner_weather_modifier: runner_weather_modifier,
@@ -360,38 +369,114 @@ class IndividualRace {
     });
   }
 
-  // private determinePlacements(): any {
-  //   this.runner_list.forEach((runner) => {
-  //     runner.race_info_for_runner.filter
-  //   });
-  // }
+  private determinePlacements(): any {
+    // just use BubbleSort because small input array size.
+    for (let i = 0; i < this.runner_list.length - 1; i++) {
+      for (let j = 0; j < this.runner_list.length - 1 - i; j++) {
+        if (
+          this.runner_list[j].current_runner_modified_skill_class <
+          this.runner_list[j + 1].current_runner_modified_skill_class
+        ) {
+          const tmp = this.runner_list[j].current_runner_modified_skill_class;
+          this.runner_list[j].current_runner_modified_skill_class =
+            this.runner_list[j + 1].current_runner_modified_skill_class;
+          this.runner_list[j + 1].current_runner_modified_skill_class = tmp;
+        }
+      }
+    }
+
+    this.runner_list[0].golds++;
+    this.runner_list[1].silvers++;
+    this.runner_list[2].bronzes++;
+
+    this.gold_runner_id = this.runner_list[0].runner_id;
+    this.silver_runner_id = this.runner_list[1].runner_id;
+    this.bronze_runner_id = this.runner_list[2].runner_id;
+
+    this.runner_list.forEach((runner) => {
+      for (let i = 0; i < runner.race_info_for_runner.length; i++) {
+        if (runner.race_info_for_runner[i].race_id === this.race_id) {
+          runner.race_info_for_runner[i].gold_runner_id =
+            this.runner_list[0].runner_id;
+          runner.race_info_for_runner[i].silver_runner_id =
+            this.runner_list[1].runner_id;
+          runner.race_info_for_runner[i].bronze_runner_id =
+            this.runner_list[2].runner_id;
+        }
+      }
+    });
+  }
 }
 
-const race1 = new IndividualRace(1, [
-  conference1.generated_conference[1].team_members[1],
-  conference1.generated_conference[5].team_members[4],
-  conference1.generated_conference[11].team_members[0],
-  conference1.generated_conference[1].team_members[7],
-  conference1.generated_conference[3].team_members[3],
-]);
-// race1.displayGeneratedConference();
-// console.log(race1.raceday_runner_stats);
-console.log(
-  conference1.generated_conference[1].team_members[1].race_info_for_runner[0]
+const race1 = new IndividualRace(
+  1,
+  [
+    conference1.generated_conference[1].team_members[1],
+    conference1.generated_conference[5].team_members[4],
+    conference1.generated_conference[11].team_members[0],
+    conference1.generated_conference[1].team_members[7],
+    conference1.generated_conference[3].team_members[3],
+  ],
+  new Date()
 );
 
-// class Schedule {
-// current plan is to have a race event every 2 weeks. A race event can have 3 to 8 races in it.
-// I think it may be best to pre-generate the races and then distribute them out to their respective weekends
-// Create a race class that takes in the distance, terrain, weather
-// }
+console.log(race1);
 
-// const conference1 = new Conference(1);
+class Schedule {
+  // current plan is to have a race event every 2 weeks. A race event can have 3 to 8 races in it.
+  // First, gen a schedule showing how many races each weekend. Pass in the race date when gen'ing an indiv race
+  // Aim to have each runner participate in one race each weekend
+  // From the schedule, we can determine team and racer stats and decide the overall winners based on
+  // gold = 3pts, silver = 2pts, bronze = 1pt
+  // lets say the race season goes from March (2) to September (8). months are zero-indexed.
+  public schedule_year: number;
+  public race_dates: Date[];
+  public current_race_id: number;
+  public races_per_weekend: number[];
 
-// conference1.generated_conference[0].team_members[5].wins++;
+  constructor(schedule_year: number) {
+    this.schedule_year = schedule_year;
+    this.race_dates = [];
+    this.current_race_id = 0;
+    this.createRaceDates();
+    this.races_per_weekend = [];
+    this.determineNumberOfRacesPerRaceWeekend();
+  }
 
-// conference1.generated_conference[0].team_members[2].wins = 20;
+  private createRaceDates(): void {
+    let firstDayOfMonth: any;
+    for (let i = 1; i < 8; i++) {
+      const newDate: Date = new Date(this.schedule_year, 2, i);
+      const newDayOfWeek = newDate.getDay();
+      if (newDayOfWeek === 6) {
+        firstDayOfMonth = i;
+        this.race_dates.push(newDate);
+      }
+    }
+    let newDate: any;
+    let i: number = 1;
+    do {
+      newDate = new Date(this.schedule_year, 2, firstDayOfMonth + 14 * i);
+      if (newDate.getMonth() < 9) {
+        this.race_dates.push(newDate);
+      }
+      i++;
+    } while (newDate.getMonth() < 9);
+  }
 
-// for (let i = 0; i < 8; i++) {
-//   console.log(conference1.generated_conference[3].team_members[i]);
-// }
+  private determineNumberOfRacesPerRaceWeekend(): void {
+    for (let i = 0; i < this.race_dates.length; i++) {
+      const number_of_races: number = Math.floor(boundedNormDist(5, 1.5, 3, 9));
+      this.races_per_weekend.push(number_of_races);
+    }
+  }
+
+  // Next step is to figure out how to break the Runner objects into roughly equal groups for the races
+  // and to ensure no runners are left out.
+  // likely deep copy the Conference object and start cycling through the teams and on each team, if they
+  // have runners left randomly choose a number then cycle through said teams runners until the number of
+  // revolutions have been hit, choose that runner, then move to next team.
+}
+
+const sched1 = new Schedule(2018);
+console.log(sched1);
