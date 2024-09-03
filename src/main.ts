@@ -16,11 +16,12 @@ import { first_names, last_names } from "./names";
 class Runner {
   public age: number;
   public runner_id: number;
-  public wins: number;
-  public losses: number;
+  // public wins: number;
+  // public losses: number;
   public golds: number;
   public silvers: number;
   public bronzes: number;
+  public runner_points: number;
   public first_name: string;
   public last_name: string;
   public current_runner_modified_skill_class: number;
@@ -49,8 +50,9 @@ class Runner {
   constructor(runner_id: number) {
     this.age = this.determineAge();
     this.runner_id = runner_id;
-    this.wins = 0;
-    this.losses = 0;
+    // this.wins = 0;
+    // this.losses = 0;
+    this.runner_points = 0;
     this.golds = 0;
     this.silvers = 0;
     this.bronzes = 0;
@@ -226,16 +228,14 @@ class Runner {
   }
 }
 
-// const runner1 = new Runner(1004);
-// runner1.describeRunner();
-// console.log(runner1.runners_preferred_distance);
-
 class Team {
   public team_id: number;
   public team_members: any[];
+  public team_points: number;
 
   constructor(team_id: number) {
     this.team_id = team_id;
+    this.team_points = 0;
     this.team_members = this.generateTeam();
   }
 
@@ -249,14 +249,13 @@ class Team {
   }
 }
 
-// const team1 = new Team(3000);
-// console.log(team1.team_members);
-
 class Conference {
   public conference_id: number;
   public generated_conference: any;
+  public ordered_runner_points: any[];
 
   constructor(conference_id: number) {
+    this.ordered_runner_points = [];
     this.conference_id = conference_id;
     this.generated_conference = this.generateConference();
   }
@@ -269,11 +268,60 @@ class Conference {
     }
     return generated_conference;
   }
+
+  public consolidatePoints(): void {
+    // Add the point count to each team at the end of the season.
+    const number_of_teams: number = this.generated_conference.length;
+    for (let i = 0; i < number_of_teams; i++) {
+      // console.log(this.generated_conference[i].team_points);
+      const number_of_runners: number =
+        this.generated_conference[i].team_members.length;
+
+      let curr_team_points: number = 0;
+      for (let j = 0; j < number_of_runners; j++) {
+        const runner: any = this.generated_conference[i].team_members[j];
+        curr_team_points += 3 * runner.golds; // golds are worth 3 points
+        curr_team_points += 2 * runner.silvers; // silvers are worth 2 points
+        curr_team_points += 1 * runner.bronzes; // bronzes are worth 1 points
+
+        let runner_points: number = 0;
+        runner_points += 3 * runner.golds;
+        runner_points += 2 * runner.silvers;
+        runner_points += 1 * runner.bronzes;
+        runner.runner_points = runner_points;
+
+        this.ordered_runner_points.push({
+          runner_id: runner.runner_id,
+          runner_points: runner.runner_points,
+          runner_golds: runner.golds,
+          runner_silvers: runner.silvers,
+          runner_bronzes: runner.bronzes,
+        });
+      }
+      this.generated_conference[i].team_points = curr_team_points;
+    }
+
+    for (let i = 0; i < this.ordered_runner_points.length - 1; i++) {
+      for (let j = 0; j < this.ordered_runner_points.length - 1 - i; j++) {
+        if (
+          this.ordered_runner_points[j].runner_points <
+          this.ordered_runner_points[j + 1].runner_points
+        ) {
+          const tmp = this.ordered_runner_points[j];
+          this.ordered_runner_points[j] = this.ordered_runner_points[j + 1];
+          this.ordered_runner_points[j + 1] = tmp;
+        }
+      }
+    }
+
+    console.log(this.ordered_runner_points);
+    // create the sorted list of runners based on points
+  }
 }
 
 // Generate the conference and all the info
 const conference1 = new Conference(1);
-// console.log(conference1.generated_conference);
+console.log(conference1);
 
 class IndividualRace {
   public race_id: number;
@@ -285,6 +333,7 @@ class IndividualRace {
   public silver_runner_id: number;
   public bronze_runner_id: number;
   public race_date: Date;
+  public runner_info: any[];
 
   constructor(race_id: number, runner_list: any[], race_date: Date) {
     // we want the updated runner stats to be pushed into raceday_runner_stats
@@ -294,16 +343,13 @@ class IndividualRace {
     this.gold_runner_id = -1;
     this.silver_runner_id = -1;
     this.bronze_runner_id = -1;
+    this.runner_info = [];
     this.race_distance = determineRaceDistance();
     this.runner_list = runner_list;
     this.race_weather = determineWeather();
     this.race_terrain = determineTerrain();
     this.determineRacedaySkillClass();
     this.determinePlacements();
-  }
-
-  public displayGeneratedConference() {
-    console.log(conference1.generated_conference[12]);
   }
 
   private determineRacedaySkillClass(): any {
@@ -356,7 +402,13 @@ class IndividualRace {
           runner_unmodified_skill_class
       );
 
-      runner.current_runner_modified_skill_class = runner_modified_skill_class;
+      // runner.current_runner_modified_skill_class = runner_modified_skill_class;
+      // console.log(runner.runner_id);
+
+      this.runner_info.push({
+        runner_id: runner.runner_id,
+        runner_modified_skill_class: runner_modified_skill_class,
+      });
 
       runner.race_info_for_runner.push({
         race_id: this.race_id,
@@ -365,34 +417,43 @@ class IndividualRace {
         runner_raceday_luck: runner_raceday_luck,
         runner_unmodified_skillclass: runner_unmodified_skill_class,
         runner_modified_skill_class: runner_modified_skill_class,
-        placement: "N/A", // placements are gold, silver, bronze, did not place, N/A
+        //placement: "N/A", // placements are gold, silver, bronze, did not place, N/A
       });
     });
   }
 
   private determinePlacements(): any {
     // just use BubbleSort because small input array size.
-    for (let i = 0; i < this.runner_list.length - 1; i++) {
-      for (let j = 0; j < this.runner_list.length - 1 - i; j++) {
+    for (let i = 0; i < this.runner_info.length - 1; i++) {
+      for (let j = 0; j < this.runner_info.length - 1 - i; j++) {
         if (
-          this.runner_list[j].current_runner_modified_skill_class <
-          this.runner_list[j + 1].current_runner_modified_skill_class
+          this.runner_info[j].runner_modified_skill_class <
+          this.runner_info[j + 1].runner_modified_skill_class
         ) {
-          const tmp = this.runner_list[j].current_runner_modified_skill_class;
-          this.runner_list[j].current_runner_modified_skill_class =
-            this.runner_list[j + 1].current_runner_modified_skill_class;
-          this.runner_list[j + 1].current_runner_modified_skill_class = tmp;
+          const tmp = this.runner_info[j];
+          this.runner_info[j] = this.runner_info[j + 1];
+          this.runner_info[j + 1] = tmp;
         }
       }
     }
 
-    this.runner_list[0].golds++;
-    this.runner_list[1].silvers++;
-    this.runner_list[2].bronzes++;
+    const gold_runner = this.runner_list.filter(
+      (runner) => runner.runner_id === this.runner_info[0].runner_id
+    )[0];
+    const silver_runner = this.runner_list.filter(
+      (runner) => runner.runner_id === this.runner_info[1].runner_id
+    )[0];
+    const bronze_runner = this.runner_list.filter(
+      (runner) => runner.runner_id === this.runner_info[2].runner_id
+    )[0];
 
-    this.gold_runner_id = this.runner_list[0].runner_id;
-    this.silver_runner_id = this.runner_list[1].runner_id;
-    this.bronze_runner_id = this.runner_list[2].runner_id;
+    gold_runner.golds++;
+    silver_runner.silvers++;
+    bronze_runner.bronzes++;
+
+    this.gold_runner_id = this.runner_info[0].runner_id;
+    this.silver_runner_id = this.runner_info[1].runner_id;
+    this.bronze_runner_id = this.runner_info[2].runner_id;
 
     this.runner_list.forEach((runner) => {
       for (let i = 0; i < runner.race_info_for_runner.length; i++) {
@@ -409,20 +470,6 @@ class IndividualRace {
   }
 }
 
-const race1 = new IndividualRace(
-  1,
-  [
-    conference1.generated_conference[1].team_members[1],
-    conference1.generated_conference[5].team_members[4],
-    conference1.generated_conference[11].team_members[0],
-    conference1.generated_conference[1].team_members[7],
-    conference1.generated_conference[3].team_members[3],
-  ],
-  new Date()
-);
-
-console.log(race1);
-
 class Schedule {
   // current plan is to have a race event every 2 weeks. A race event can have 3 to 8 races in it.
   // First, gen a schedule showing how many races each weekend. Pass in the race date when gen'ing an indiv race
@@ -434,15 +481,23 @@ class Schedule {
   public race_dates: Date[];
   public current_race_id: number;
   public races_per_weekend: number[];
+  public race_list: any[];
+  public team_ranking: any[];
+  public runner_ranking: any[];
 
   constructor(schedule_year: number) {
     this.schedule_year = schedule_year;
+    this.race_list = [];
+    this.team_ranking = [];
+    this.runner_ranking = [];
     this.race_dates = [];
     this.current_race_id = 0;
     this.createRaceDates();
     this.races_per_weekend = [];
     this.determineNumberOfRacesPerRaceWeekend();
-    this.allocateRunners(5);
+    // this.allocateRunnersForIndividualRace(5);
+    this.runTheRaces();
+    this.consolidateTeamAndRunnerPoints();
     // I am at the point where i can start running the races because I can
   }
 
@@ -474,10 +529,13 @@ class Schedule {
     }
   }
 
-  private allocateRunners(numberOfRacesInCurrentWeekend: number): any {
-    // first race weekend allocation
-    // const numberOfRacesInCurrentWeekend = this.races_per_weekend[0]
-    // const numberOfRacesInCurrentWeekend = 5;
+  private allocateRunnersForIndividualRace(
+    numberOfRacesInCurrentWeekend: number
+  ): any {
+    // this method takes in the number of races in the current weekend
+    // and returns an array of arrays. Each array contains a list of runner
+    // objects which represent the runners in a particular race
+
     const runnerGroupings: any[] = [];
     for (let i = 0; i < numberOfRacesInCurrentWeekend; i++) {
       runnerGroupings.push([]);
@@ -505,7 +563,6 @@ class Schedule {
         if (curr_team[rand].already_chosen_for_current_race === false) {
           runnerGroupings[race_index].push(curr_team[rand]);
           curr_team[rand].already_chosen_for_current_race = true;
-          // console.log(curr_team[rand]);
           break;
         } else {
           count++;
@@ -530,18 +587,33 @@ class Schedule {
         runnerGroupings[i][j].already_chosen_for_current_race = false;
       }
     }
-    console.log(runnerGroupings);
 
     return runnerGroupings;
   }
 
-  // Next step is to figure out how to break the Runner objects into roughly equal groups for the races
-  // and to ensure no runners are left out.
-  // likely deep copy the Conference object and start cycling through the teams and on each team, if they
-  // have runners left randomly choose a number then cycle through said teams runners until the number of
-  // revolutions have been hit, choose that runner, then move to next team.
+  private runTheRaces() {
+    let scheduled_race_id: number = 1;
+    for (let i = 0; i < this.race_dates.length; i++) {
+      const racesThisWeekend: number = this.races_per_weekend[i];
+      const runnerGroupingsForCurrentWeekend: any =
+        this.allocateRunnersForIndividualRace(racesThisWeekend);
+      for (let j = 0; j < racesThisWeekend; j++) {
+        this.race_list.push(
+          new IndividualRace(
+            scheduled_race_id,
+            runnerGroupingsForCurrentWeekend[j],
+            this.race_dates[i]
+          )
+        );
+        scheduled_race_id++;
+      }
+    }
+  }
+
+  private consolidateTeamAndRunnerPoints(): void {
+    conference1.consolidatePoints();
+  }
 }
 
-const sched1 = new Schedule(2018);
+const sched1 = new Schedule(2024);
 console.log(sched1);
-console.log(conference1.generated_conference[0].team_members.length);
