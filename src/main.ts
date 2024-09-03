@@ -25,6 +25,7 @@ class Runner {
   public last_name: string;
   public current_runner_modified_skill_class: number;
   public race_info_for_runner: any[];
+  public already_chosen_for_current_race: boolean; //used by allocateRunners in Schedule
 
   public phys_factor: number;
   public training_factor: number;
@@ -57,6 +58,7 @@ class Runner {
     this.last_name = this.determineName(last_names);
     this.race_info_for_runner = [];
     this.current_runner_modified_skill_class = 1;
+    this.already_chosen_for_current_race = false;
 
     this.phys_factor = this.determinePhysFactor(this.age);
     this.training_factor = this.determineTrainingFactor();
@@ -89,7 +91,6 @@ class Runner {
 
   private determineSkillClass(distance: string): number {
     if (distance === "5 km") {
-      // 0.7-0.3+0.2+0.3=0.9
       return roundToChosenDecimal(
         1.7 * this.phys_factor +
           this.training_factor +
@@ -441,6 +442,8 @@ class Schedule {
     this.createRaceDates();
     this.races_per_weekend = [];
     this.determineNumberOfRacesPerRaceWeekend();
+    this.allocateRunners(5);
+    // I am at the point where i can start running the races because I can
   }
 
   private createRaceDates(): void {
@@ -471,6 +474,67 @@ class Schedule {
     }
   }
 
+  private allocateRunners(numberOfRacesInCurrentWeekend: number): any {
+    // first race weekend allocation
+    // const numberOfRacesInCurrentWeekend = this.races_per_weekend[0]
+    // const numberOfRacesInCurrentWeekend = 5;
+    const runnerGroupings: any[] = [];
+    for (let i = 0; i < numberOfRacesInCurrentWeekend; i++) {
+      runnerGroupings.push([]);
+    }
+    let race_index = 0;
+    let teamIndex = 0; //this number will cycle through the number of teams there are and reset after the last one
+    // 8 runners on 20 teams = 160 runners to allocate
+
+    // determine the number of runners in the conference for runner allocation
+    let numberOfRunners: number = 0;
+    const numberOfTeams: number = conference1.generated_conference.length;
+    for (let i = 0; i < numberOfTeams; i++) {
+      numberOfRunners +=
+        conference1.generated_conference[i].team_members.length;
+    }
+
+    for (let i = 0; i < numberOfRunners; i++) {
+      //this will continue to loop once for every runner
+      const curr_team =
+        conference1.generated_conference[teamIndex].team_members;
+      const rand = Math.floor(Math.random() * curr_team.length);
+
+      let count = 0;
+      while (count < 100) {
+        if (curr_team[rand].already_chosen_for_current_race === false) {
+          runnerGroupings[race_index].push(curr_team[rand]);
+          curr_team[rand].already_chosen_for_current_race = true;
+          // console.log(curr_team[rand]);
+          break;
+        } else {
+          count++;
+        }
+      }
+
+      if (teamIndex < numberOfTeams - 1) {
+        teamIndex++;
+      } else {
+        teamIndex = 0;
+      }
+
+      if (race_index < numberOfRacesInCurrentWeekend - 1) {
+        race_index++;
+      } else {
+        race_index = 0;
+      }
+    }
+
+    for (let i = 0; i < numberOfRacesInCurrentWeekend; i++) {
+      for (let j = 0; j < runnerGroupings[i].length; j++) {
+        runnerGroupings[i][j].already_chosen_for_current_race = false;
+      }
+    }
+    console.log(runnerGroupings);
+
+    return runnerGroupings;
+  }
+
   // Next step is to figure out how to break the Runner objects into roughly equal groups for the races
   // and to ensure no runners are left out.
   // likely deep copy the Conference object and start cycling through the teams and on each team, if they
@@ -480,3 +544,4 @@ class Schedule {
 
 const sched1 = new Schedule(2018);
 console.log(sched1);
+console.log(conference1.generated_conference[0].team_members.length);
