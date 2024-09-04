@@ -482,14 +482,14 @@ class Schedule {
   public current_race_id: number;
   public races_per_weekend: number[];
   public race_list: any[];
-  public team_ranking: any[];
-  public runner_ranking: any[];
+  // public team_ranking: any[];
+  // public runner_ranking: any[];
 
   constructor(schedule_year: number) {
     this.schedule_year = schedule_year;
     this.race_list = [];
-    this.team_ranking = [];
-    this.runner_ranking = [];
+    // this.team_ranking = [];
+    // this.runner_ranking = [];
     this.race_dates = [];
     this.current_race_id = 0;
     this.createRaceDates();
@@ -524,7 +524,9 @@ class Schedule {
 
   private determineNumberOfRacesPerRaceWeekend(): void {
     for (let i = 0; i < this.race_dates.length; i++) {
-      const number_of_races: number = Math.floor(boundedNormDist(5, 1.5, 3, 9));
+      const number_of_races: number = Math.floor(
+        boundedNormDist(3.5, 1.5, 2, 6)
+      );
       this.races_per_weekend.push(number_of_races);
     }
   }
@@ -617,3 +619,15 @@ class Schedule {
 
 const sched1 = new Schedule(2024);
 console.log(sched1);
+
+const testZone = document.getElementById("test-zone");
+if (testZone) {
+  testZone.innerHTML = `<h1>${conference1.generated_conference[2].team_points}</h1>`;
+}
+
+// What to do now??
+// first decide on a simple UI to show the season results.
+// top 3 teams, top 3 teams in each race length
+// top 3 runners, top 3 runners in each race length
+// class for display purposes??
+// super simple UI with blocks for display of each category

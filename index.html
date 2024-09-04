@@ -2,13 +2,145 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <script type="module" src="/src/main.ts" defer></script>
+    <title>Runner Sim</title>
   </head>
   <body>
-    <h1>hello runners!</h1>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <h1 id="page-title">Runner Season Simulator</h1>
+    <div id="test-zone"></div>
+    <section id="season-info">
+      <h2>Running Season Info</h2>
+      <ul>
+        <li>
+          The season consists of a chosen year and runs from the start of March
+          to the end of September.
+        </li>
+        <li>
+          The season is made up of a competitive Conference which contains 20
+          Teams. Each team is made up of 8 individual Runners.
+        </li>
+        <li>
+          All 160 runners are generated at the start of the season and have
+          numerous characteristics determined for them at the start of the
+          season. These factors are physical, training, nutritional,
+          psychological, biomechanical, and genetic factors.
+        </li>
+        <li>
+          All of these factors are then combined into a "skill class" for each
+          race length. This means that a runner may be better at certain race
+          distances if they have a certain mix of strong factors.
+        </li>
+        <li>
+          From here, a schedule for the season's races is created allocating 2
+          to 5 races on every second weekend. The runners are then allocated to
+          those races.
+        </li>
+        <li>
+          The runners then have a weather, terrain, and luck modifier added to
+          their skill class in the case the race aligns with their preferred
+          weather and/or terrain. The luck modifier is determined for each race
+          since a runner may feel sick, have an injury, or be in the zone on a
+          race day.
+        </li>
+        <li>
+          Finally, all the races are run and points are determined. Golds count
+          for 3 points, silvers for 2 points, and bronzes for 1 point.
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Overall - Top 3 Teams</h2>
+      <ul>
+        <li>Fighting Ferrets - 90 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Fillet Minion - 71 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Big Bad Boyos - 68 pts - 20 golds - 10 silvers - 3 bronzes</li>
+      </ul>
+      <h2>Overall - Top 3 Runners</h2>
+      <ul>
+        <li>Billy Wilbert - 30 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Tina Thompson - 29 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Regi Reginald - 28 pts - 20 golds - 10 silvers - 3 bronzes</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>5 km - Top 3 Teams</h2>
+      <ul>
+        <li>Fighting Ferrets - 90 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Fillet Minion - 71 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Big Bad Boyos - 68 pts - 20 golds - 10 silvers - 3 bronzes</li>
+      </ul>
+      <h2>5 km - Top 3 Runners</h2>
+      <ul>
+        <li>Billy Wilbert - 30 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Tina Thompson - 29 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Regi Reginald - 28 pts - 20 golds - 10 silvers - 3 bronzes</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>10 km - Top 3 Teams</h2>
+      <ul>
+        <li>Fighting Ferrets - 90 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Fillet Minion - 71 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Big Bad Boyos - 68 pts - 20 golds - 10 silvers - 3 bronzes</li>
+      </ul>
+      <h2>10 km - Top 3 Runners</h2>
+      <ul>
+        <li>Billy Wilbert - 30 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Tina Thompson - 29 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Regi Reginald - 28 pts - 20 golds - 10 silvers - 3 bronzes</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Half Marathon - Top 3 Teams</h2>
+      <ul>
+        <li>Fighting Ferrets - 90 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Fillet Minion - 71 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Big Bad Boyos - 68 pts - 20 golds - 10 silvers - 3 bronzes</li>
+      </ul>
+      <h2>Half Marathon - Top 3 Runners</h2>
+      <ul>
+        <li>Billy Wilbert - 30 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Tina Thompson - 29 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Regi Reginald - 28 pts - 20 golds - 10 silvers - 3 bronzes</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Marathon - Top 3 Teams</h2>
+      <ul>
+        <li>Fighting Ferrets - 90 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Fillet Minion - 71 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Big Bad Boyos - 68 pts - 20 golds - 10 silvers - 3 bronzes</li>
+      </ul>
+      <h2>Marathon - Top 3 Runners</h2>
+      <ul>
+        <li>Billy Wilbert - 30 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Tina Thompson - 29 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Regi Reginald - 28 pts - 20 golds - 10 silvers - 3 bronzes</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>100 mile - Top 3 Teams</h2>
+      <ul>
+        <li>Fighting Ferrets - 90 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Fillet Minion - 71 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Big Bad Boyos - 68 pts - 20 golds - 10 silvers - 3 bronzes</li>
+      </ul>
+      <h2>100 mile - Top 3 Runners</h2>
+      <ul>
+        <li>Billy Wilbert - 30 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Tina Thompson - 29 pts - 20 golds - 10 silvers - 3 bronzes</li>
+        <li>Regi Reginald - 28 pts - 20 golds - 10 silvers - 3 bronzes</li>
+      </ul>
+    </section>
+
+    <!-- <div id="app"></div> -->
   </body>
 </html>
