@@ -16,8 +16,6 @@ import { first_names, last_names } from "./names";
 class Runner {
   public age: number;
   public runner_id: number;
-  // public wins: number;
-  // public losses: number;
   public golds: number;
   public silvers: number;
   public bronzes: number;
@@ -27,6 +25,7 @@ class Runner {
   public current_runner_modified_skill_class: number;
   public race_info_for_runner: any[];
   public already_chosen_for_current_race: boolean; //used by allocateRunners in Schedule
+  public stats_per_race_type: any;
 
   public phys_factor: number;
   public training_factor: number;
@@ -42,16 +41,12 @@ class Runner {
   public skill_class_100mile: number;
 
   public runners_preferred_distance: string[];
-  // Perhaps could randomly decide if a runner prefers road/trail AND what weather they perform best in (most will be moderate weather)
-  // envFactor
   public preferredTerrain: string;
   public preferredWeather: string;
 
   constructor(runner_id: number) {
     this.age = this.determineAge();
     this.runner_id = runner_id;
-    // this.wins = 0;
-    // this.losses = 0;
     this.runner_points = 0;
     this.golds = 0;
     this.silvers = 0;
@@ -61,6 +56,43 @@ class Runner {
     this.race_info_for_runner = [];
     this.current_runner_modified_skill_class = 1;
     this.already_chosen_for_current_race = false;
+    this.stats_per_race_type = {
+      "5 km": {
+        points: 0,
+        golds: 0,
+        silvers: 0,
+        bronzes: 0,
+        race_run_in_category: 0,
+      },
+      "10 km": {
+        points: 0,
+        golds: 0,
+        silvers: 0,
+        bronzes: 0,
+        race_run_in_category: 0,
+      },
+      "half marathon": {
+        points: 0,
+        golds: 0,
+        silvers: 0,
+        bronzes: 0,
+        race_run_in_category: 0,
+      },
+      marathon: {
+        points: 0,
+        golds: 0,
+        silvers: 0,
+        bronzes: 0,
+        race_run_in_category: 0,
+      },
+      "100 mile": {
+        points: 0,
+        golds: 0,
+        silvers: 0,
+        bronzes: 0,
+        race_run_in_category: 0,
+      },
+    };
 
     this.phys_factor = this.determinePhysFactor(this.age);
     this.training_factor = this.determineTrainingFactor();
@@ -252,12 +284,13 @@ class Team {
 class Conference {
   public conference_id: number;
   public generated_conference: any;
-  public ordered_runner_points: any[];
+  public all_runners: any[];
 
   constructor(conference_id: number) {
-    this.ordered_runner_points = [];
+    this.all_runners = [];
     this.conference_id = conference_id;
     this.generated_conference = this.generateConference();
+    this.collectAllRunners();
   }
 
   private generateConference(): any[] {
@@ -289,33 +322,17 @@ class Conference {
         runner_points += 2 * runner.silvers;
         runner_points += 1 * runner.bronzes;
         runner.runner_points = runner_points;
-
-        this.ordered_runner_points.push({
-          runner_id: runner.runner_id,
-          runner_points: runner.runner_points,
-          runner_golds: runner.golds,
-          runner_silvers: runner.silvers,
-          runner_bronzes: runner.bronzes,
-        });
       }
       this.generated_conference[i].team_points = curr_team_points;
     }
+  }
 
-    for (let i = 0; i < this.ordered_runner_points.length - 1; i++) {
-      for (let j = 0; j < this.ordered_runner_points.length - 1 - i; j++) {
-        if (
-          this.ordered_runner_points[j].runner_points <
-          this.ordered_runner_points[j + 1].runner_points
-        ) {
-          const tmp = this.ordered_runner_points[j];
-          this.ordered_runner_points[j] = this.ordered_runner_points[j + 1];
-          this.ordered_runner_points[j + 1] = tmp;
-        }
-      }
-    }
-
-    console.log(this.ordered_runner_points);
-    // create the sorted list of runners based on points
+  private collectAllRunners(): void {
+    this.generated_conference.forEach((team: any) => {
+      team.team_members.forEach((runner: any) => {
+        this.all_runners.push(runner);
+      });
+    });
   }
 }
 
@@ -350,6 +367,11 @@ class IndividualRace {
     this.race_terrain = determineTerrain();
     this.determineRacedaySkillClass();
     this.determinePlacements();
+    this.addSpecificStatsToRunner("5 km");
+    this.addSpecificStatsToRunner("10 km");
+    this.addSpecificStatsToRunner("half marathon");
+    this.addSpecificStatsToRunner("marathon");
+    this.addSpecificStatsToRunner("100 mile");
   }
 
   private determineRacedaySkillClass(): any {
@@ -468,6 +490,24 @@ class IndividualRace {
       }
     });
   }
+
+  private addSpecificStatsToRunner(race_parameter: string): void {
+    conference1.all_runners.forEach((runner) => {
+      if (this.race_distance === race_parameter) {
+        runner.stats_per_race_type[race_parameter].race_run_in_category++;
+        if (runner.runner_id === this.gold_runner_id) {
+          runner.stats_per_race_type[race_parameter].golds++;
+          runner.stats_per_race_type[race_parameter].points += 3;
+        } else if (runner.runner_id === this.silver_runner_id) {
+          runner.stats_per_race_type[race_parameter].silvers++;
+          runner.stats_per_race_type[race_parameter].points += 2;
+        } else if (runner.runner_id === this.bronze_runner_id) {
+          runner.stats_per_race_type[race_parameter].bronzes++;
+          runner.stats_per_race_type[race_parameter].points += 1;
+        }
+      }
+    });
+  }
 }
 
 class Schedule {
@@ -482,12 +522,14 @@ class Schedule {
   public current_race_id: number;
   public races_per_weekend: number[];
   public race_list: any[];
+  // public ordered_runner_points_5km: any[];
   // public team_ranking: any[];
   // public runner_ranking: any[];
 
   constructor(schedule_year: number) {
     this.schedule_year = schedule_year;
     this.race_list = [];
+    // this.ordered_runner_points_5km = []
     // this.team_ranking = [];
     // this.runner_ranking = [];
     this.race_dates = [];
@@ -615,15 +657,85 @@ class Schedule {
   private consolidateTeamAndRunnerPoints(): void {
     conference1.consolidatePoints();
   }
+
+  // public accumulateTopRunners(race_parameter: string): void {
+  //   // race_parameter may be distance, terrain, or weather
+  //   const list_of_applicable_races = this.race_list.filter((race) => race.race_distance === race_parameter)
+  //   list_of_applicable_races.forEach((race) => {
+
+  //   })
+
+  // }
 }
 
 const sched1 = new Schedule(2024);
 console.log(sched1);
 
-const testZone = document.getElementById("test-zone");
-if (testZone) {
-  testZone.innerHTML = `<h1>${conference1.generated_conference[2].team_points}</h1>`;
+class ScoreInformation {
+  public runner_5km_stats: any[];
+  public all_runners: any[];
+
+  constructor() {
+    this.runner_5km_stats = [];
+    this.all_runners = [];
+    // this.collectAllRunners();
+    this.accumulate_5km_stats();
+  }
+
+  // private collectAllRunners(): void {
+  //   conference1.generated_conference.forEach((team: any) => {
+  //     team.team_members.forEach((runner: any) => {
+  //       this.all_runners.push(runner);
+  //     });
+  //   });
+  //   // order in descending order by points
+  //   for (let i = 0; i < this.all_runners.length - 1; i++) {
+  //     for (let j = 0; j < this.all_runners.length - 1 - i; j++) {
+  //       if (
+  //         this.all_runners[j].runner_points <
+  //         this.all_runners[j + 1].runner_points
+  //       ) {
+  //         const tmp = this.all_runners[j];
+  //         this.all_runners[j] = this.all_runners[j + 1];
+  //         this.all_runners[j + 1] = tmp;
+  //       }
+  //     }
+  //   }
+  // }
+
+  private accumulate_5km_stats(): void {
+    this.runner_5km_stats = [...this.all_runners];
+    console.log(this.runner_5km_stats);
+    const races_5km = sched1.race_list.filter(
+      (race) => race.race_distance === "5 km"
+    );
+    console.log(races_5km);
+    this.runner_5km_stats.forEach((runner) => {
+      // review the
+      races_5km.forEach((indiv_5km_race) => {});
+    });
+  }
 }
+
+// const accumulated_scores = new ScoreInformation();
+// console.log(accumulated_scores.all_runners);
+
+// const testZone = document.getElementById("test-zone");
+// if (testZone) {
+//   testZone.innerHTML = `<h1>${conference1.generated_conference[2].team_points}</h1>`;
+// }
+
+const overallTop3RunnersUL = document.getElementById("overall-top-3-runners");
+// if (overallTop3RunnersUL) {
+//   for (let i = 0; i < overallTop3RunnersUL.children.length; i++) {
+//     const runner = conference1.ordered_runner_points[i];
+//     const full_name = `${runner.runner_first_name} ${runner.runner_last_name}`;
+//     overallTop3RunnersUL.children[
+//       i
+//     ].textContent = `${full_name} (ID: ${runner.runner_id}) - ${runner.runner_points} pts -
+//     ${runner.runner_golds} golds - ${runner.runner_silvers} silvers - ${runner.runner_bronzes} bronzes`;
+//   }
+// }
 
 // What to do now??
 // first decide on a simple UI to show the season results.
@@ -631,3 +743,9 @@ if (testZone) {
 // top 3 runners, top 3 runners in each race length
 // class for display purposes??
 // super simple UI with blocks for display of each category
+
+// Current todo!
+// Am currently working on the ScoreInformation Class. Need to create a Runner array for each race distance
+// and order said array afterwards.
+// also need to create a similar distance specific stats object on each team to accumulate the
+// team stats in so that I can figure them out in ScoreInformation.
