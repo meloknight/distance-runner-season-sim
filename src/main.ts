@@ -7,6 +7,7 @@ import {
   determineRaceDistance,
 } from "./utility_functions";
 import { first_names, last_names } from "./names";
+import { animals, adjectives } from "./team_names";
 
 // class notes
 // public - accessible from inside or outside the class object
@@ -262,11 +263,51 @@ class Runner {
 
 class Team {
   public team_id: number;
+  public team_name: string;
   public team_members: any[];
   public team_points: number;
+  public team_stats_per_race_type: any;
 
   constructor(team_id: number) {
     this.team_id = team_id;
+    this.team_name = this.generateTeamName();
+    this.team_stats_per_race_type = {
+      "5 km": {
+        points: 0,
+        golds: 0,
+        silvers: 0,
+        bronzes: 0,
+        race_run_in_category: 0,
+      },
+      "10 km": {
+        points: 0,
+        golds: 0,
+        silvers: 0,
+        bronzes: 0,
+        race_run_in_category: 0,
+      },
+      "half marathon": {
+        points: 0,
+        golds: 0,
+        silvers: 0,
+        bronzes: 0,
+        race_run_in_category: 0,
+      },
+      marathon: {
+        points: 0,
+        golds: 0,
+        silvers: 0,
+        bronzes: 0,
+        race_run_in_category: 0,
+      },
+      "100 mile": {
+        points: 0,
+        golds: 0,
+        silvers: 0,
+        bronzes: 0,
+        race_run_in_category: 0,
+      },
+    };
     this.team_points = 0;
     this.team_members = this.generateTeam();
   }
@@ -278,6 +319,16 @@ class Team {
       generated_team.push(new Runner(runner_id_generator));
     }
     return generated_team;
+  }
+
+  private generateTeamName(): string {
+    const rand_animal_index: number = Math.floor(
+      Math.random() * animals.length
+    );
+    const rand_adjective_index: number = Math.floor(
+      Math.random() * adjectives.length
+    );
+    return `The ${adjectives[rand_adjective_index]} ${animals[rand_animal_index]}`;
   }
 }
 
@@ -332,6 +383,32 @@ class Conference {
       team.team_members.forEach((runner: any) => {
         this.all_runners.push(runner);
       });
+    });
+  }
+
+  public accumulateTeamPointsPerRaceType(race_parameter: string): void {
+    this.generated_conference.forEach((team: any) => {
+      let golds = 0,
+        silvers = 0,
+        bronzes = 0,
+        points = 0,
+        race_run_in_category = 0;
+
+      team.team_members.forEach((runner: any) => {
+        golds += runner.stats_per_race_type[race_parameter].golds;
+        silvers += runner.stats_per_race_type[race_parameter].silvers;
+        bronzes += runner.stats_per_race_type[race_parameter].bronzes;
+        points += runner.stats_per_race_type[race_parameter].points;
+        race_run_in_category +=
+          runner.stats_per_race_type[race_parameter].race_run_in_category;
+      });
+
+      team.team_stats_per_race_type[race_parameter].golds = golds;
+      team.team_stats_per_race_type[race_parameter].silvers = silvers;
+      team.team_stats_per_race_type[race_parameter].bronzes = bronzes;
+      team.team_stats_per_race_type[race_parameter].points = points;
+      team.team_stats_per_race_type[race_parameter].race_run_in_category =
+        race_run_in_category;
     });
   }
 }
@@ -673,52 +750,76 @@ console.log(sched1);
 
 class ScoreInformation {
   public runner_5km_stats: any[];
-  public all_runners: any[];
+  public runner_10km_stats: any[];
+  public runner_half_marathon_stats: any[];
+  public runner_marathon_stats: any[];
+  public runner_100mile_stats: any[];
+
+  public team_5km_stats: any[];
+  public team_10km_stats: any[];
+  public team_half_marathon_stats: any[];
+  public team_marathon_stats: any[];
+  public team_100mile_stats: any[];
 
   constructor() {
-    this.runner_5km_stats = [];
-    this.all_runners = [];
-    // this.collectAllRunners();
-    this.accumulate_5km_stats();
+    this.runner_5km_stats = this.accumulateStats("5 km");
+    this.runner_10km_stats = this.accumulateStats("10 km");
+    this.runner_half_marathon_stats = this.accumulateStats("half marathon");
+    this.runner_marathon_stats = this.accumulateStats("marathon");
+    this.runner_100mile_stats = this.accumulateStats("100 mile");
+    this.accumulateTeamStats();
+    this.team_5km_stats = this.orderTeamsByRaceType("5 km");
+    this.team_10km_stats = this.orderTeamsByRaceType("10 km");
+    this.team_half_marathon_stats = this.orderTeamsByRaceType("half marathon");
+    this.team_marathon_stats = this.orderTeamsByRaceType("marathon");
+    this.team_100mile_stats = this.orderTeamsByRaceType("100 mile");
   }
 
-  // private collectAllRunners(): void {
-  //   conference1.generated_conference.forEach((team: any) => {
-  //     team.team_members.forEach((runner: any) => {
-  //       this.all_runners.push(runner);
-  //     });
-  //   });
-  //   // order in descending order by points
-  //   for (let i = 0; i < this.all_runners.length - 1; i++) {
-  //     for (let j = 0; j < this.all_runners.length - 1 - i; j++) {
-  //       if (
-  //         this.all_runners[j].runner_points <
-  //         this.all_runners[j + 1].runner_points
-  //       ) {
-  //         const tmp = this.all_runners[j];
-  //         this.all_runners[j] = this.all_runners[j + 1];
-  //         this.all_runners[j + 1] = tmp;
-  //       }
-  //     }
-  //   }
-  // }
+  private accumulateStats(race_parameter: string): any[] {
+    const runner_stats = [...conference1.all_runners];
+    for (let i = 0; i < runner_stats.length - 1; i++) {
+      for (let j = 0; j < runner_stats.length - 1 - i; j++) {
+        if (
+          runner_stats[j].stats_per_race_type[race_parameter]["points"] <
+          runner_stats[j + 1].stats_per_race_type[race_parameter]["points"]
+        ) {
+          const tmp = runner_stats[j];
+          runner_stats[j] = runner_stats[j + 1];
+          runner_stats[j + 1] = tmp;
+        }
+      }
+    }
+    return runner_stats;
+  }
 
-  private accumulate_5km_stats(): void {
-    this.runner_5km_stats = [...this.all_runners];
-    console.log(this.runner_5km_stats);
-    const races_5km = sched1.race_list.filter(
-      (race) => race.race_distance === "5 km"
-    );
-    console.log(races_5km);
-    this.runner_5km_stats.forEach((runner) => {
-      // review the
-      races_5km.forEach((indiv_5km_race) => {});
-    });
+  private accumulateTeamStats(): void {
+    conference1.accumulateTeamPointsPerRaceType("5 km");
+    conference1.accumulateTeamPointsPerRaceType("10 km");
+    conference1.accumulateTeamPointsPerRaceType("half marathon");
+    conference1.accumulateTeamPointsPerRaceType("marathon");
+    conference1.accumulateTeamPointsPerRaceType("100 mile");
+  }
+
+  private orderTeamsByRaceType(race_parameter: string): any[] {
+    const ordered_teams: any[] = [...conference1.generated_conference];
+    for (let i = 0; i < ordered_teams.length - 1; i++) {
+      for (let j = 0; j < ordered_teams.length - 1 - i; j++) {
+        if (
+          ordered_teams[j].team_stats_per_race_type[race_parameter].points <
+          ordered_teams[j + 1].team_stats_per_race_type[race_parameter].points
+        ) {
+          const tmp = ordered_teams[j];
+          ordered_teams[j] = ordered_teams[j + 1];
+          ordered_teams[j + 1] = tmp;
+        }
+      }
+    }
+    return ordered_teams;
   }
 }
 
-// const accumulated_scores = new ScoreInformation();
-// console.log(accumulated_scores.all_runners);
+const accumulated_scores = new ScoreInformation();
+console.log(accumulated_scores.team_5km_stats);
 
 // const testZone = document.getElementById("test-zone");
 // if (testZone) {
@@ -737,15 +838,7 @@ const overallTop3RunnersUL = document.getElementById("overall-top-3-runners");
 //   }
 // }
 
-// What to do now??
-// first decide on a simple UI to show the season results.
-// top 3 teams, top 3 teams in each race length
-// top 3 runners, top 3 runners in each race length
-// class for display purposes??
-// super simple UI with blocks for display of each category
-
 // Current todo!
-// Am currently working on the ScoreInformation Class. Need to create a Runner array for each race distance
-// and order said array afterwards.
-// also need to create a similar distance specific stats object on each team to accumulate the
-// team stats in so that I can figure them out in ScoreInformation.
+// - Display the top runners and teams in each category!
+// - Add types to a bunch of things!
+// - Break the classes and such out into their own files and such! aka refactor this sucker!
