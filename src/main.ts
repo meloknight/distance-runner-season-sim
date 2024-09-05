@@ -266,6 +266,9 @@ class Team {
   public team_name: string;
   public team_members: any[];
   public team_points: number;
+  public golds: number;
+  public silvers: number;
+  public bronzes: number;
   public team_stats_per_race_type: any;
 
   constructor(team_id: number) {
@@ -309,6 +312,9 @@ class Team {
       },
     };
     this.team_points = 0;
+    this.golds = 0;
+    this.silvers = 0;
+    this.bronzes = 0;
     this.team_members = this.generateTeam();
   }
 
@@ -357,16 +363,21 @@ class Conference {
     // Add the point count to each team at the end of the season.
     const number_of_teams: number = this.generated_conference.length;
     for (let i = 0; i < number_of_teams; i++) {
-      // console.log(this.generated_conference[i].team_points);
       const number_of_runners: number =
         this.generated_conference[i].team_members.length;
 
       let curr_team_points: number = 0;
+      let curr_team_golds: number = 0;
+      let curr_team_silvers: number = 0;
+      let curr_team_bronzes: number = 0;
       for (let j = 0; j < number_of_runners; j++) {
         const runner: any = this.generated_conference[i].team_members[j];
         curr_team_points += 3 * runner.golds; // golds are worth 3 points
         curr_team_points += 2 * runner.silvers; // silvers are worth 2 points
         curr_team_points += 1 * runner.bronzes; // bronzes are worth 1 points
+        curr_team_golds += runner.golds;
+        curr_team_silvers += runner.silvers;
+        curr_team_bronzes += runner.bronzes;
 
         let runner_points: number = 0;
         runner_points += 3 * runner.golds;
@@ -375,6 +386,9 @@ class Conference {
         runner.runner_points = runner_points;
       }
       this.generated_conference[i].team_points = curr_team_points;
+      this.generated_conference[i].golds = curr_team_golds;
+      this.generated_conference[i].silvers = curr_team_silvers;
+      this.generated_conference[i].bronzes = curr_team_bronzes;
     }
   }
 
@@ -384,6 +398,36 @@ class Conference {
         this.all_runners.push(runner);
       });
     });
+  }
+
+  public orderAllRunners(): void {
+    for (let i = 0; i < this.all_runners.length - 1; i++) {
+      for (let j = 0; j < this.all_runners.length - 1 - i; j++) {
+        if (
+          this.all_runners[j].runner_points <
+          this.all_runners[j + 1].runner_points
+        ) {
+          const tmp = this.all_runners[j];
+          this.all_runners[j] = this.all_runners[j + 1];
+          this.all_runners[j + 1] = tmp;
+        }
+      }
+    }
+  }
+
+  public orderAllTeams(): void {
+    for (let i = 0; i < this.generated_conference.length - 1; i++) {
+      for (let j = 0; j < this.generated_conference.length - 1 - i; j++) {
+        if (
+          this.generated_conference[j].team_points <
+          this.generated_conference[j + 1].team_points
+        ) {
+          const tmp = this.generated_conference[j];
+          this.generated_conference[j] = this.generated_conference[j + 1];
+          this.generated_conference[j + 1] = tmp;
+        }
+      }
+    }
   }
 
   public accumulateTeamPointsPerRaceType(race_parameter: string): void {
@@ -762,6 +806,8 @@ class ScoreInformation {
   public team_100mile_stats: any[];
 
   constructor() {
+    this.orderAllRunnersInConference();
+    this.orderAllTeamsInConference();
     this.runner_5km_stats = this.accumulateStats("5 km");
     this.runner_10km_stats = this.accumulateStats("10 km");
     this.runner_half_marathon_stats = this.accumulateStats("half marathon");
@@ -773,6 +819,14 @@ class ScoreInformation {
     this.team_half_marathon_stats = this.orderTeamsByRaceType("half marathon");
     this.team_marathon_stats = this.orderTeamsByRaceType("marathon");
     this.team_100mile_stats = this.orderTeamsByRaceType("100 mile");
+  }
+
+  private orderAllRunnersInConference(): void {
+    conference1.orderAllRunners();
+  }
+
+  private orderAllTeamsInConference(): void {
+    conference1.orderAllTeams();
   }
 
   private accumulateStats(race_parameter: string): any[] {
@@ -819,26 +873,159 @@ class ScoreInformation {
 }
 
 const accumulated_scores = new ScoreInformation();
-console.log(accumulated_scores.team_5km_stats);
+console.log(accumulated_scores);
 
-// const testZone = document.getElementById("test-zone");
-// if (testZone) {
-//   testZone.innerHTML = `<h1>${conference1.generated_conference[2].team_points}</h1>`;
-// }
+class DisplayInfo {
+  private overallTop3RunnersUL: HTMLElement | null;
+  private overallTop3TeamsUL: HTMLElement | null;
+  private top3Teams5kmUL: HTMLElement | null;
+  private top3Runners5kmUL: HTMLElement | null;
+  private top3Teams10kmUL: HTMLElement | null;
+  private top3Runners10kmUL: HTMLElement | null;
+  private top3TeamsHalfMarathonUL: HTMLElement | null;
+  private top3RunnersHalfMarathonUL: HTMLElement | null;
+  private top3TeamsMarathonUL: HTMLElement | null;
+  private top3RunnersMarathonUL: HTMLElement | null;
+  private top3Teams100MileUL: HTMLElement | null;
+  private top3Runners100MileUL: HTMLElement | null;
 
-const overallTop3RunnersUL = document.getElementById("overall-top-3-runners");
-// if (overallTop3RunnersUL) {
-//   for (let i = 0; i < overallTop3RunnersUL.children.length; i++) {
-//     const runner = conference1.ordered_runner_points[i];
-//     const full_name = `${runner.runner_first_name} ${runner.runner_last_name}`;
-//     overallTop3RunnersUL.children[
-//       i
-//     ].textContent = `${full_name} (ID: ${runner.runner_id}) - ${runner.runner_points} pts -
-//     ${runner.runner_golds} golds - ${runner.runner_silvers} silvers - ${runner.runner_bronzes} bronzes`;
-//   }
-// }
+  constructor() {
+    this.overallTop3TeamsUL = document.getElementById("overall-top-3-teams");
+    this.overallTop3RunnersUL = document.getElementById(
+      "overall-top-3-runners"
+    );
+    this.top3Teams5kmUL = document.getElementById("5km-top-3-teams");
+    this.top3Runners5kmUL = document.getElementById("5km-top-3-runners");
+    this.top3Teams10kmUL = document.getElementById("10km-top-3-teams");
+    this.top3Runners10kmUL = document.getElementById("10km-top-3-runners");
+    this.top3TeamsHalfMarathonUL = document.getElementById(
+      "half-marathon-top-3-teams"
+    );
+    this.top3RunnersHalfMarathonUL = document.getElementById(
+      "half-marathon-top-3-runners"
+    );
+    this.top3TeamsMarathonUL = document.getElementById("marathon-top-3-teams");
+    this.top3RunnersMarathonUL = document.getElementById(
+      "marathon-top-3-runners"
+    );
+    this.top3Teams100MileUL = document.getElementById("100mile-top-3-teams");
+    this.top3Runners100MileUL = document.getElementById(
+      "100mile-top-3-runners"
+    );
+    this.displayOverallTop3Teams();
+    this.displayRaceTypeTop3Teams(
+      this.top3Teams5kmUL,
+      "5 km",
+      accumulated_scores.team_5km_stats
+    );
+    this.displayRaceTypeTop3Teams(
+      this.top3Teams10kmUL,
+      "10 km",
+      accumulated_scores.team_10km_stats
+    );
+    this.displayRaceTypeTop3Teams(
+      this.top3TeamsHalfMarathonUL,
+      "half marathon",
+      accumulated_scores.team_half_marathon_stats
+    );
+    this.displayRaceTypeTop3Teams(
+      this.top3TeamsMarathonUL,
+      "marathon",
+      accumulated_scores.team_marathon_stats
+    );
+    this.displayRaceTypeTop3Teams(
+      this.top3Teams100MileUL,
+      "100 mile",
+      accumulated_scores.team_100mile_stats
+    );
+    this.displayOverallTop3Runners();
+    this.displayRaceTypeTop3Runners(
+      this.top3Runners5kmUL,
+      "5 km",
+      accumulated_scores.runner_5km_stats
+    );
+    this.displayRaceTypeTop3Runners(
+      this.top3Runners10kmUL,
+      "10 km",
+      accumulated_scores.runner_10km_stats
+    );
+    this.displayRaceTypeTop3Runners(
+      this.top3RunnersHalfMarathonUL,
+      "half marathon",
+      accumulated_scores.runner_half_marathon_stats
+    );
+    this.displayRaceTypeTop3Runners(
+      this.top3RunnersMarathonUL,
+      "marathon",
+      accumulated_scores.runner_marathon_stats
+    );
+    this.displayRaceTypeTop3Runners(
+      this.top3Runners100MileUL,
+      "100 mile",
+      accumulated_scores.runner_100mile_stats
+    );
+  }
+
+  private displayRaceTypeTop3Teams(
+    HTMLObject: HTMLElement | null,
+    race_parameter: string,
+    team_list: any[]
+  ): void {
+    if (HTMLObject) {
+      for (let i = 0; i < HTMLObject.children.length; i++) {
+        const team = team_list[i];
+        HTMLObject.children[
+          i
+        ].textContent = `${team.team_name} (ID: ${team.team_id}) - ${team.team_stats_per_race_type[race_parameter].points} pts - ${team.team_stats_per_race_type[race_parameter].golds} golds - ${team.team_stats_per_race_type[race_parameter].silvers} silvers - ${team.team_stats_per_race_type[race_parameter].bronzes} bronzes`;
+      }
+    }
+  }
+
+  private displayRaceTypeTop3Runners(
+    HTMLObject: HTMLElement | null,
+    race_parameter: string,
+    runner_list: any[]
+  ): void {
+    if (HTMLObject) {
+      for (let i = 0; i < HTMLObject.children.length; i++) {
+        const runner = runner_list[i];
+        const runner_name: string = `${runner.first_name} ${runner.last_name}`;
+        HTMLObject.children[
+          i
+        ].textContent = `${runner_name} (ID: ${runner.runner_id}) - ${runner.stats_per_race_type[race_parameter].points} pts - ${runner.stats_per_race_type[race_parameter].golds} golds - ${runner.stats_per_race_type[race_parameter].silvers} silvers - ${runner.stats_per_race_type[race_parameter].points} bronzes`;
+      }
+    }
+  }
+
+  private displayOverallTop3Teams(): void {
+    if (this.overallTop3TeamsUL) {
+      for (let i = 0; i < this.overallTop3TeamsUL.children.length; i++) {
+        const team = conference1.generated_conference[i];
+        this.overallTop3TeamsUL.children[
+          i
+        ].textContent = `${team.team_name} (ID: ${team.team_id}) - ${team.team_points} pts - ${team.golds} golds - ${team.silvers} silvers - ${team.bronzes} bronzes`;
+      }
+    }
+  }
+
+  private displayOverallTop3Runners(): void {
+    if (this.overallTop3RunnersUL) {
+      for (let i = 0; i < this.overallTop3RunnersUL.children.length; i++) {
+        const runner = conference1.all_runners[i];
+        const full_name = `${runner.first_name} ${runner.last_name}`;
+        this.overallTop3RunnersUL.children[
+          i
+        ].textContent = `${full_name} (ID: ${runner.runner_id}) - ${runner.runner_points} pts - ${runner.golds} golds - ${runner.silvers} silvers - ${runner.bronzes} bronzes`;
+      }
+    }
+  }
+}
+
+const displayInfo1 = new DisplayInfo();
 
 // Current todo!
-// - Display the top runners and teams in each category!
+// - Look at possibly adding a loading animation or running dude or something? (something kinda flashy for the people)
 // - Add types to a bunch of things!
 // - Break the classes and such out into their own files and such! aka refactor this sucker!
+// - Look into storing the Needed objects in localStorage and allowing
+//    the user to reset the simulation if they want to.
