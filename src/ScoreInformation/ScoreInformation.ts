@@ -1,19 +1,37 @@
+import { ConferenceInterface } from "../Conference/Conference";
+import { raceDistanceType, RunnerInterface } from "../Runner/Runner";
+import { TeamInterface } from "../Team/Team";
+
+export interface ScoreInformationInterface {
+  runner_5km_stats: RunnerInterface[];
+  runner_10km_stats: RunnerInterface[];
+  runner_half_marathon_stats: RunnerInterface[];
+  runner_marathon_stats: RunnerInterface[];
+  runner_100mile_stats: RunnerInterface[];
+
+  team_5km_stats: TeamInterface[];
+  team_10km_stats: TeamInterface[];
+  team_half_marathon_stats: TeamInterface[];
+  team_marathon_stats: TeamInterface[];
+  team_100mile_stats: TeamInterface[];
+}
+
 export class ScoreInformation {
-  private conference: any;
+  private conference: ConferenceInterface;
 
-  public runner_5km_stats: any[];
-  public runner_10km_stats: any[];
-  public runner_half_marathon_stats: any[];
-  public runner_marathon_stats: any[];
-  public runner_100mile_stats: any[];
+  public runner_5km_stats: RunnerInterface[];
+  public runner_10km_stats: RunnerInterface[];
+  public runner_half_marathon_stats: RunnerInterface[];
+  public runner_marathon_stats: RunnerInterface[];
+  public runner_100mile_stats: RunnerInterface[];
 
-  public team_5km_stats: any[];
-  public team_10km_stats: any[];
-  public team_half_marathon_stats: any[];
-  public team_marathon_stats: any[];
-  public team_100mile_stats: any[];
+  public team_5km_stats: TeamInterface[];
+  public team_10km_stats: TeamInterface[];
+  public team_half_marathon_stats: TeamInterface[];
+  public team_marathon_stats: TeamInterface[];
+  public team_100mile_stats: TeamInterface[];
 
-  constructor(conference: any) {
+  constructor(conference: ConferenceInterface) {
     this.conference = conference;
     this.orderAllRunnersInConference();
     this.orderAllTeamsInConference();
@@ -38,7 +56,7 @@ export class ScoreInformation {
     this.conference.orderAllTeams();
   }
 
-  private accumulateStats(race_parameter: string): any[] {
+  private accumulateStats(race_parameter: raceDistanceType): RunnerInterface[] {
     const runner_stats = [...this.conference.all_runners];
     for (let i = 0; i < runner_stats.length - 1; i++) {
       for (let j = 0; j < runner_stats.length - 1 - i; j++) {
@@ -63,8 +81,12 @@ export class ScoreInformation {
     this.conference.accumulateTeamPointsPerRaceType("100 mile");
   }
 
-  private orderTeamsByRaceType(race_parameter: string): any[] {
-    const ordered_teams: any[] = [...this.conference.generated_conference];
+  private orderTeamsByRaceType(
+    race_parameter: raceDistanceType
+  ): TeamInterface[] {
+    const ordered_teams: TeamInterface[] = [
+      ...this.conference.generated_conference,
+    ];
     for (let i = 0; i < ordered_teams.length - 1; i++) {
       for (let j = 0; j < ordered_teams.length - 1 - i; j++) {
         if (

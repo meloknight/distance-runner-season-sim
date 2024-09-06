@@ -5,6 +5,23 @@ import {
   statsPerRaceTypeInterface,
 } from "../Runner/Runner";
 
+export interface TeamInterface {
+  team_id: number;
+  team_name: string;
+  team_members: RunnerInterface[];
+  team_points: number;
+  golds: number;
+  silvers: number;
+  bronzes: number;
+  team_stats_per_race_type: {
+    "5 km": statsPerRaceTypeInterface;
+    "10 km": statsPerRaceTypeInterface;
+    "half marathon": statsPerRaceTypeInterface;
+    marathon: statsPerRaceTypeInterface;
+    "100 mile": statsPerRaceTypeInterface;
+  };
+}
+
 export class Team {
   public team_id: number;
   public team_name: string;
@@ -86,21 +103,4 @@ export class Team {
     );
     return `The ${adjectives[rand_adjective_index]} ${animals[rand_animal_index]}`;
   }
-}
-
-export interface TeamInterface {
-  team_id: number;
-  team_name: string;
-  team_members: RunnerInterface[];
-  team_points: number;
-  golds: number;
-  silvers: number;
-  bronzes: number;
-  team_stats_per_race_type: {
-    "5 km": statsPerRaceTypeInterface;
-    "10 km": statsPerRaceTypeInterface;
-    "half marathon": statsPerRaceTypeInterface;
-    marathon: statsPerRaceTypeInterface;
-    "100 mile": statsPerRaceTypeInterface;
-  };
 }

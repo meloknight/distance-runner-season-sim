@@ -5,28 +5,47 @@ import {
   determineWeather,
   boundedNormDist,
 } from "../utility_functions";
+import { ConferenceInterface } from "../Conference/Conference";
+import { raceDistanceType, RunnerInterface } from "../Runner/Runner";
+
+export interface IndividualRaceInterface {
+  conference: ConferenceInterface;
+  race_id: number;
+  race_distance: string;
+  runner_list: RunnerInterface[];
+  race_weather: string;
+  race_terrain: string;
+  gold_runner_id: number;
+  silver_runner_id: number;
+  bronze_runner_id: number;
+  race_date: Date;
+  runner_info: RunnerInfoInterface[];
+}
+
+interface RunnerInfoInterface {
+  runner_id: number;
+  runner_modified_skill_class: number;
+}
 
 export class IndividualRace {
-  public conference: any;
+  public conference: ConferenceInterface;
   public race_id: number;
   public race_distance: string;
-  public runner_list: any[];
+  public runner_list: RunnerInterface[];
   public race_weather: string;
   public race_terrain: string;
   public gold_runner_id: number;
   public silver_runner_id: number;
   public bronze_runner_id: number;
   public race_date: Date;
-  public runner_info: any[];
+  public runner_info: RunnerInfoInterface[];
 
   constructor(
-    conference: any,
+    conference: ConferenceInterface,
     race_id: number,
-    runner_list: any[],
+    runner_list: RunnerInterface[],
     race_date: Date
   ) {
-    // we want the updated runner stats to be pushed into raceday_runner_stats
-    // These stats take weather and terrain into account and then
     this.conference = conference;
     this.race_id = race_id;
     this.race_date = race_date;
@@ -47,7 +66,7 @@ export class IndividualRace {
     this.addSpecificStatsToRunner("100 mile");
   }
 
-  private determineRacedaySkillClass(): any {
+  private determineRacedaySkillClass(): void {
     this.runner_list.forEach((runner) => {
       const weatherModifier = (): number => {
         if (this.race_weather === runner.preferredWeather) {
@@ -97,9 +116,6 @@ export class IndividualRace {
           runner_unmodified_skill_class
       );
 
-      // runner.current_runner_modified_skill_class = runner_modified_skill_class;
-      // console.log(runner.runner_id);
-
       this.runner_info.push({
         runner_id: runner.runner_id,
         runner_modified_skill_class: runner_modified_skill_class,
@@ -112,13 +128,11 @@ export class IndividualRace {
         runner_raceday_luck: runner_raceday_luck,
         runner_unmodified_skillclass: runner_unmodified_skill_class,
         runner_modified_skill_class: runner_modified_skill_class,
-        //placement: "N/A", // placements are gold, silver, bronze, did not place, N/A
       });
     });
   }
 
-  private determinePlacements(): any {
-    // just use BubbleSort because small input array size.
+  private determinePlacements(): void {
     for (let i = 0; i < this.runner_info.length - 1; i++) {
       for (let j = 0; j < this.runner_info.length - 1 - i; j++) {
         if (
@@ -149,23 +163,10 @@ export class IndividualRace {
     this.gold_runner_id = this.runner_info[0].runner_id;
     this.silver_runner_id = this.runner_info[1].runner_id;
     this.bronze_runner_id = this.runner_info[2].runner_id;
-
-    this.runner_list.forEach((runner) => {
-      for (let i = 0; i < runner.race_info_for_runner.length; i++) {
-        if (runner.race_info_for_runner[i].race_id === this.race_id) {
-          runner.race_info_for_runner[i].gold_runner_id =
-            this.runner_list[0].runner_id;
-          runner.race_info_for_runner[i].silver_runner_id =
-            this.runner_list[1].runner_id;
-          runner.race_info_for_runner[i].bronze_runner_id =
-            this.runner_list[2].runner_id;
-        }
-      }
-    });
   }
 
-  private addSpecificStatsToRunner(race_parameter: string): void {
-    this.conference.all_runners.forEach((runner: any) => {
+  private addSpecificStatsToRunner(race_parameter: raceDistanceType): void {
+    this.conference.all_runners.forEach((runner: RunnerInterface) => {
       if (this.race_distance === race_parameter) {
         runner.stats_per_race_type[race_parameter].race_run_in_category++;
         if (runner.runner_id === this.gold_runner_id) {

@@ -1,6 +1,16 @@
 import { Team, TeamInterface } from "../Team/Team";
 import { RunnerInterface, raceDistanceType } from "../Runner/Runner";
 
+export interface ConferenceInterface {
+  conference_id: number;
+  generated_conference: TeamInterface[];
+  all_runners: RunnerInterface[];
+  consolidatePoints(): void;
+  orderAllRunners(): void;
+  orderAllTeams(): void;
+  accumulateTeamPointsPerRaceType(race_parameter: raceDistanceType): void;
+}
+
 export class Conference {
   public conference_id: number;
   public generated_conference: TeamInterface[];
