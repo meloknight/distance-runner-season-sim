@@ -1,9 +1,10 @@
-import { Team } from "../Team/Team";
+import { Team, TeamInterface } from "../Team/Team";
+import { RunnerInterface, raceDistanceType } from "../Runner/Runner";
 
 export class Conference {
   public conference_id: number;
-  public generated_conference: any;
-  public all_runners: any[];
+  public generated_conference: TeamInterface[];
+  public all_runners: RunnerInterface[];
 
   constructor(conference_id: number) {
     this.all_runners = [];
@@ -12,8 +13,8 @@ export class Conference {
     this.collectAllRunners();
   }
 
-  private generateConference(): any[] {
-    const generated_conference: any[] = [];
+  private generateConference(): TeamInterface[] {
+    const generated_conference: TeamInterface[] = [];
     for (let i = 1; i <= 20; i++) {
       const team_id: number = i * 1000;
       generated_conference.push(new Team(team_id));
@@ -33,7 +34,8 @@ export class Conference {
       let curr_team_silvers: number = 0;
       let curr_team_bronzes: number = 0;
       for (let j = 0; j < number_of_runners; j++) {
-        const runner: any = this.generated_conference[i].team_members[j];
+        const runner: RunnerInterface =
+          this.generated_conference[i].team_members[j];
         curr_team_points += 3 * runner.golds; // golds are worth 3 points
         curr_team_points += 2 * runner.silvers; // silvers are worth 2 points
         curr_team_points += 1 * runner.bronzes; // bronzes are worth 1 points
@@ -55,8 +57,8 @@ export class Conference {
   }
 
   private collectAllRunners(): void {
-    this.generated_conference.forEach((team: any) => {
-      team.team_members.forEach((runner: any) => {
+    this.generated_conference.forEach((team: TeamInterface) => {
+      team.team_members.forEach((runner: RunnerInterface) => {
         this.all_runners.push(runner);
       });
     });
@@ -92,15 +94,17 @@ export class Conference {
     }
   }
 
-  public accumulateTeamPointsPerRaceType(race_parameter: string): void {
-    this.generated_conference.forEach((team: any) => {
+  public accumulateTeamPointsPerRaceType(
+    race_parameter: raceDistanceType
+  ): void {
+    this.generated_conference.forEach((team: TeamInterface) => {
       let golds = 0,
         silvers = 0,
         bronzes = 0,
         points = 0,
         race_run_in_category = 0;
 
-      team.team_members.forEach((runner: any) => {
+      team.team_members.forEach((runner: RunnerInterface) => {
         golds += runner.stats_per_race_type[race_parameter].golds;
         silvers += runner.stats_per_race_type[race_parameter].silvers;
         bronzes += runner.stats_per_race_type[race_parameter].bronzes;

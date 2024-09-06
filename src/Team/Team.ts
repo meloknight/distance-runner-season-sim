@@ -1,15 +1,25 @@
 import { animals, adjectives } from "./team_names";
-import { Runner } from "../Runner/Runner";
+import {
+  Runner,
+  RunnerInterface,
+  statsPerRaceTypeInterface,
+} from "../Runner/Runner";
 
 export class Team {
   public team_id: number;
   public team_name: string;
-  public team_members: any[];
+  public team_members: RunnerInterface[];
   public team_points: number;
   public golds: number;
   public silvers: number;
   public bronzes: number;
-  public team_stats_per_race_type: any;
+  public team_stats_per_race_type: {
+    "5 km": statsPerRaceTypeInterface;
+    "10 km": statsPerRaceTypeInterface;
+    "half marathon": statsPerRaceTypeInterface;
+    marathon: statsPerRaceTypeInterface;
+    "100 mile": statsPerRaceTypeInterface;
+  };
 
   constructor(team_id: number) {
     this.team_id = team_id;
@@ -58,8 +68,8 @@ export class Team {
     this.team_members = this.generateTeam();
   }
 
-  private generateTeam(): any[] {
-    const generated_team: any[] = [];
+  private generateTeam(): RunnerInterface[] {
+    const generated_team: RunnerInterface[] = [];
     for (let i = 1; i <= 8; i++) {
       const runner_id_generator = this.team_id + i;
       generated_team.push(new Runner(runner_id_generator));
@@ -76,4 +86,21 @@ export class Team {
     );
     return `The ${adjectives[rand_adjective_index]} ${animals[rand_animal_index]}`;
   }
+}
+
+export interface TeamInterface {
+  team_id: number;
+  team_name: string;
+  team_members: RunnerInterface[];
+  team_points: number;
+  golds: number;
+  silvers: number;
+  bronzes: number;
+  team_stats_per_race_type: {
+    "5 km": statsPerRaceTypeInterface;
+    "10 km": statsPerRaceTypeInterface;
+    "half marathon": statsPerRaceTypeInterface;
+    marathon: statsPerRaceTypeInterface;
+    "100 mile": statsPerRaceTypeInterface;
+  };
 }

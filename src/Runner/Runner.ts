@@ -6,6 +6,30 @@ import {
   determineWeather,
 } from "../utility_functions";
 
+interface raceInfoForRunnerInterface {
+  race_id: number;
+  runner_weather_modifier: number;
+  runner_terrain_modifier: number;
+  runner_raceday_luck: number;
+  runner_unmodified_skillclass: number;
+  runner_modified_skill_class: number;
+}
+
+export interface statsPerRaceTypeInterface {
+  points: number;
+  golds: number;
+  silvers: number;
+  bronzes: number;
+  race_run_in_category: number;
+}
+
+export type raceDistanceType =
+  | "5 km"
+  | "10 km"
+  | "half marathon"
+  | "marathon"
+  | "100 mile";
+
 export class Runner {
   public age: number;
   public runner_id: number;
@@ -16,9 +40,15 @@ export class Runner {
   public first_name: string;
   public last_name: string;
   public current_runner_modified_skill_class: number;
-  public race_info_for_runner: any[];
+  public race_info_for_runner: raceInfoForRunnerInterface[];
   public already_chosen_for_current_race: boolean; //used by allocateRunners in Schedule
-  public stats_per_race_type: any;
+  public stats_per_race_type: {
+    "5 km": statsPerRaceTypeInterface;
+    "10 km": statsPerRaceTypeInterface;
+    "half marathon": statsPerRaceTypeInterface;
+    marathon: statsPerRaceTypeInterface;
+    "100 mile": statsPerRaceTypeInterface;
+  };
 
   public phys_factor: number;
   public training_factor: number;
@@ -251,4 +281,58 @@ export class Runner {
         `My 100mile Skill Class is ${this.skill_class_100mile}. `
     );
   }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+export interface RunnerInterface {
+  age: number;
+  runner_id: number;
+  golds: number;
+  silvers: number;
+  bronzes: number;
+  runner_points: number;
+  first_name: string;
+  last_name: string;
+  current_runner_modified_skill_class: number;
+  race_info_for_runner: raceInfoForRunnerInterface[];
+  already_chosen_for_current_race: boolean;
+  stats_per_race_type: {
+    "5 km": statsPerRaceTypeInterface;
+    "10 km": statsPerRaceTypeInterface;
+    "half marathon": statsPerRaceTypeInterface;
+    marathon: statsPerRaceTypeInterface;
+    "100 mile": statsPerRaceTypeInterface;
+  };
+
+  phys_factor: number;
+  training_factor: number;
+  nutri_factor: number;
+  psych_factor: number;
+  biomech_factor: number;
+  gene_factor: number;
+
+  skill_class_5km: number;
+  skill_class_10km: number;
+  skill_class_half_marathon: number;
+  skill_class_marathon: number;
+  skill_class_100mile: number;
+
+  runners_preferred_distance: string[];
+  preferredTerrain: string;
+  preferredWeather: string;
+
+  // determineAge(): number;
+  // determineName(name_array: string[]): string;
+  // determineSkillClass(distance: string): number;
+  // determineDistancePreferrence(): string[];
+  // determinePhysFactor(age: number): number;
+  // determineTrainingFactor(): number;
+  // determineNutriFactor(): number;
+  // determinePsychFactor(): number;
+  // determineBiomechFactor(): number;
+  // determineGeneFactor(): number;
+  // determineTerrainPreference(): string;
+  // determineWeatherPreference(): string;
+  // describeRunner(): void;
 }
