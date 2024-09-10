@@ -1,40 +1,49 @@
-name: Deploy Vite Static Site to GitHub Pages
+name: Deploy
 
 on:
-  # Trigger the workflow on push to the main branch
   push:
     branches:
       - main
 
-  # Also allow manual runs
-  workflow_dispatch:
-
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository code
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      # Set up Node.js
-      - name: Set up Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
-        with:
-          node-version: 20 # Adjust this to your node version
 
-      # Install dependencies and build the site
       - name: Install dependencies
-        run: npm install
+        uses: bahmutov/npm-install@v1
 
-      - name: Build the Vite site
+      - name: Build project
         run: npm run build
 
-      # Deploy to GitHub Pages using peaceiris/actions-gh-pages
+      - name: Upload production-ready build files
+        uses: actions/upload-artifact@v3
+        with:
+          name: production-files
+          path: ./dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: production-files
+          path: ./dist
+
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist # This is the default output folder for Vite
-
+          publish_dir: ./dist
