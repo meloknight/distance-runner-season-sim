@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Runner Sim</title>
+    <script type="module" crossorigin src="/assets/index-DQx7KuwH.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-sh92RgZF.css">
+  </head>
+  <body>
+    <div id="content-container">
+      <h1 id="page-title">Runner Season Simulator</h1>
+
+      <section id="season-info">
+        <div id="how-it-works-header">
+          <h2>How it works...</h2>
+          <button id="how-it-works-reveal-button">Expand</button>
+        </div>
+        <ul id="how-it-works-list">
+          <li>
+            The Runner Season Simulator is designed to generate a simulated
+            distance runner competitive season.
+          </li>
+          <li>
+            The season consists of a chosen year and runs from the start of
+            March to the end of September of the chosen year.
+          </li>
+          <li>
+            The season is made up of a competitive Conference which contains 20
+            Teams. Each Team is made up of 8 individual Runners.
+          </li>
+          <li>
+            All 160 runners are generated at the start of the season and have
+            numerous characteristics determined for them at the start of the
+            season. These factors are physical, training, nutritional,
+            psychological, biomechanical, and genetic factors.
+          </li>
+          <li>
+            All of these factors are then combined into a "skill class" for each
+            race length. This means that a runner may be better at certain race
+            distances if they have a certain mix of strong factors.
+          </li>
+          <li>
+            From here, a schedule for the season's races is created allocating 2
+            to 5 races on every second weekend. The runners are then allocated
+            to those races.
+          </li>
+          <li>
+            The runners then have a weather, terrain, and luck modifier added to
+            their skill class in the case the race aligns with their preferred
+            weather and/or terrain. The luck modifier is determined for each
+            race since a runner may feel sick, have an injury, or be in the zone
+            on a race day.
+          </li>
+          <li>
+            Finally, all the races are run, winners are selected by highest
+            raceday skill class, and points are determined. Golds count for 3
+            points, silvers for 2 points, and bronzes for 1 point.
+          </li>
+          <li>
+            Note: To view full objects with all information included right-click
+            on this webpage and click inspect. From there, select console to
+            view the Conference and Schedule Objects. These contain most
+            information produced by this application.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <form action="" id="user-form">
+          <div class="user-form-section">
+            <label for="year" id="year-label">Year: </label>
+            <input
+              type="number"
+              id="year"
+              year="year"
+              value="2024"
+              max="10000"
+              min="-10000"
+            />
+          </div>
+          <div class="user-form-section">
+            <input id="form-submit" type="submit" value="Generate" />
+          </div>
+        </form>
+      </section>
+
+      <section id="runner-review">
+        <h2>Runner Review</h2>
+        <br />
+        <div id="runner-review-section-container">
+          <div class="runner-review-section">
+            <form action="" id="runner-form">
+              <div class="runner-form-section">
+                <label for="team-select">Team: </label>
+                <select name="team-select" id="team-select">
+                  <option value="">-- Select a team --</option>
+                  <option value="">Submit a year</option>
+                </select>
+              </div>
+              <div class="runner-form-section">
+                <label for="runner-select">Runner: </label>
+                <select name="runner-select" id="runner-select">
+                  <option value="">-- Select a runner --</option>
+                  <option value="">Submit a year</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="runner-review-section" id="runner-review-display">
+            <div class="runner-review-section-subsection">
+              <p id="runner-review-name">Name:</p>
+              <p id="runner-review-id">Runner ID:</p>
+              <p id="runner-review-age">Age:</p>
+              <p id="runner-review-team">Team Name:</p>
+              <p id="runner-review-points">Points:</p>
+              <p id="runner-review-golds">Golds:</p>
+              <p id="runner-review-silvers">Silvers:</p>
+              <p id="runner-review-bronzes">Bronzes:</p>
+              <p id="runner-review-races-run">Number of Races Run:</p>
+            </div>
+            <div class="runner-review-section-subsection">
+              <p id="runner-review-5km-sc">5 km Skill Class:</p>
+              <p id="runner-review-10km-sc">10 km Skill Class:</p>
+              <p id="runner-review-half-marathon-sc">
+                Half Marathon Skill Class:
+              </p>
+              <p id="runner-review-marathon-sc">Marathon Class:</p>
+              <p id="runner-review-100mile-sc">100 mile Skill Class:</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Overall - Top 3 Teams</h2>
+        <ul id="overall-top-3-teams">
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+        </ul>
+        <h2>Overall - Top 3 Runners</h2>
+        <ul id="overall-top-3-runners">
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>5 km - Top 3 Teams</h2>
+        <ul id="5km-top-3-teams">
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+        </ul>
+        <h2>5 km - Top 3 Runners</h2>
+        <ul id="5km-top-3-runners">
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>10 km - Top 3 Teams</h2>
+        <ul id="10km-top-3-teams">
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+        </ul>
+        <h2>10 km - Top 3 Runners</h2>
+        <ul id="10km-top-3-runners">
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Half Marathon - Top 3 Teams</h2>
+        <ul id="half-marathon-top-3-teams">
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+        </ul>
+        <h2>Half Marathon - Top 3 Runners</h2>
+        <ul id="half-marathon-top-3-runners">
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Marathon - Top 3 Teams</h2>
+        <ul id="marathon-top-3-teams">
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+        </ul>
+        <h2>Marathon - Top 3 Runners</h2>
+        <ul id="marathon-top-3-runners">
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>100 mile - Top 3 Teams</h2>
+        <ul id="100mile-top-3-teams">
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+        </ul>
+        <h2>100 mile - Top 3 Runners</h2>
+        <ul id="100mile-top-3-runners">
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+          <li>No Results yet!</li>
+        </ul>
+      </section>
+    </div>
+    <!-- <div id="app"></div> -->
+    <!-- <script type="module" src="/src/main.ts"></script> -->
+  </body>
+</html>
