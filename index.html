@@ -5,7 +5,7 @@
     <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
     <link rel="stylesheet" href="./src/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+    <script type="module" src="/src/main.ts" defer></script>
     <title>Runner Sim</title>
   </head>
   <body>
@@ -19,12 +19,16 @@
         </div>
         <ul id="how-it-works-list">
           <li>
+            The Runner Season Simulator is designed to generate a simulated
+            distance runner competitive season.
+          </li>
+          <li>
             The season consists of a chosen year and runs from the start of
-            March to the end of September.
+            March to the end of September of the chosen year.
           </li>
           <li>
             The season is made up of a competitive Conference which contains 20
-            Teams. Each team is made up of 8 individual Runners.
+            Teams. Each Team is made up of 8 individual Runners.
           </li>
           <li>
             All 160 runners are generated at the start of the season and have
@@ -65,33 +69,67 @@
 
       <section>
         <form action="" id="user-form">
-          <label for="year">Year: </label>
-          <input type="number" id="year" year="year" value="2024" /><br /><br />
-
-          <input type="submit" value="submit" />
+          <div class="user-form-section">
+            <label for="year" id="year-label">Year: </label>
+            <input
+              type="number"
+              id="year"
+              year="year"
+              value="2024"
+              max="10000"
+              min="-10000"
+            />
+          </div>
+          <div class="user-form-section">
+            <input id="form-submit" type="submit" value="Generate" />
+          </div>
         </form>
       </section>
 
       <section id="runner-review">
         <h2>Runner Review</h2>
-        <div class="runner-review-section">
-          <p id="runner-review-name">Name: Billy BIllington</p>
-          <p id="runner-review-id">Runner ID: 10004</p>
-          <p id="runner-review-age">Age: 30</p>
-          <p id="runner-review-team">Team Name: Blah Blah</p>
-          <p id="runner-review-points">Points: 26</p>
-          <p id="runner-review-golds">Golds: 1</p>
-          <p id="runner-review-silvers">Silvers: 1</p>
-          <p id="runner-review-bronzes">Bronzes: 1</p>
-        </div>
-        <div class="runner-review-section">
-          <p id="runner-review-5km-sc">5 km Skill Class: 1000</p>
-          <p id="runner-review-10km-sc">10 km Skill Class: 1000</p>
-          <p id="runner-review-half-marathon-sc">
-            Half Marathon Skill Class: 1000
-          </p>
-          <p id="runner-review-marathon-sc">Marathon Class: 1000</p>
-          <p id="runner-review-100mile-sc">100 mile Skill Class: 1000</p>
+        <br />
+        <div id="runner-review-section-container">
+          <div class="runner-review-section">
+            <form action="" id="runner-form">
+              <div class="runner-form-section">
+                <label for="team-select">Team: </label>
+                <select name="team-select" id="team-select">
+                  <option value="">-- Select a team --</option>
+                  <option value="">Submit a year</option>
+                </select>
+              </div>
+              <div class="runner-form-section">
+                <label for="runner-select">Runner: </label>
+                <select name="runner-select" id="runner-select">
+                  <option value="">-- Select a runner --</option>
+                  <option value="">Submit a year</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="runner-review-section" id="runner-review-display">
+            <div class="runner-review-section-subsection">
+              <p id="runner-review-name">Name:</p>
+              <p id="runner-review-id">Runner ID:</p>
+              <p id="runner-review-age">Age:</p>
+              <p id="runner-review-team">Team Name:</p>
+              <p id="runner-review-points">Points:</p>
+              <p id="runner-review-golds">Golds:</p>
+              <p id="runner-review-silvers">Silvers:</p>
+              <p id="runner-review-bronzes">Bronzes:</p>
+              <p id="runner-review-races-run">Number of Races Run:</p>
+            </div>
+            <div class="runner-review-section-subsection">
+              <p id="runner-review-5km-sc">5 km Skill Class:</p>
+              <p id="runner-review-10km-sc">10 km Skill Class:</p>
+              <p id="runner-review-half-marathon-sc">
+                Half Marathon Skill Class:
+              </p>
+              <p id="runner-review-marathon-sc">Marathon Class:</p>
+              <p id="runner-review-100mile-sc">100 mile Skill Class:</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -186,6 +224,6 @@
       </section>
     </div>
     <!-- <div id="app"></div> -->
-    <script type="module" src="/src/main.ts"></script>
+    <!-- <script type="module" src="/src/main.ts"></script> -->
   </body>
 </html>

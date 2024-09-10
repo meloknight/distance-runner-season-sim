@@ -7,8 +7,6 @@ export class DisplayInfo {
   private conference: ConferenceInterface;
   private ScoreInformation: ScoreInformationInterface;
 
-  // private chosenRunnerName: HTMLElement | null;
-
   private overallTop3RunnersUL: HTMLElement | null;
   private overallTop3TeamsUL: HTMLElement | null;
   private top3Teams5kmUL: HTMLElement | null;
@@ -55,7 +53,8 @@ export class DisplayInfo {
     );
 
     // display summarized information
-    this.displayRunnerReview(1002);
+    // this.displayRunnerReview(1002);
+    this.updateTeamSelect();
     this.displayOverallTop3Teams();
     this.displayRaceTypeTop3Teams(
       this.top3Teams5kmUL,
@@ -110,7 +109,25 @@ export class DisplayInfo {
     );
   }
 
-  private displayRunnerReview(runner_id: number): void {
+  private updateTeamSelect(): void {
+    const teamSelect = document.getElementById("team-select");
+    if (teamSelect) {
+      teamSelect.innerHTML = "";
+    }
+    const select_a_team = document.createElement("option");
+    select_a_team.value = "";
+    select_a_team.text = "-- Select a team --";
+    teamSelect?.appendChild(select_a_team);
+    for (let i = 0; i < this.conference.generated_conference.length; i++) {
+      const team = this.conference.generated_conference[i];
+      const team_option = document.createElement("option");
+      team_option.value = team.team_id.toString();
+      team_option.text = `${team.team_name} (ID: ${team.team_id})`;
+      teamSelect?.appendChild(team_option);
+    }
+  }
+
+  public displayRunnerReview(runner_id: number): void {
     const chosenRunnerID = document.getElementById("runner-review-id");
     const chosenRunnerName = document.getElementById("runner-review-name");
     const chosenRunnerAge = document.getElementById("runner-review-age");
@@ -122,6 +139,9 @@ export class DisplayInfo {
     );
     const chosenRunnerBronzes = document.getElementById(
       "runner-review-bronzes"
+    );
+    const chosenRunnerRacesRun = document.getElementById(
+      "runner-review-races-run"
     );
     const skillClass5km = document.getElementById("runner-review-5km-sc");
     const skillClass10km = document.getElementById("runner-review-10km-sc");
@@ -135,8 +155,9 @@ export class DisplayInfo {
       "runner-review-100mile-sc"
     );
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CHOSEN RUNNER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     const chosen_runner = this.conference.all_runners.filter(
-      (runner) => runner.runner_id === runner_id
+      (runner) => runner.runner_id == runner_id
     )[0];
     if (chosenRunnerName) {
       chosenRunnerName.textContent = `Name: ${chosen_runner.first_name} ${chosen_runner.last_name}`;
@@ -156,7 +177,6 @@ export class DisplayInfo {
     if (chosenRunnerTeam) {
       chosenRunnerTeam.textContent = `Team: ${runner_team_name}`;
     }
-
     if (chosenRunnerPoints) {
       chosenRunnerPoints.textContent = `Points: ${chosen_runner.runner_points}`;
     }
@@ -168,6 +188,9 @@ export class DisplayInfo {
     }
     if (chosenRunnerBronzes) {
       chosenRunnerBronzes.textContent = `Bronze(s): ${chosen_runner.bronzes}`;
+    }
+    if (chosenRunnerRacesRun) {
+      chosenRunnerRacesRun.textContent = `Number of Races Run: ${chosen_runner.race_info_for_runner.length}`;
     }
     if (skillClass5km) {
       skillClass5km.textContent = `5km Skill Class: ${chosen_runner.skill_class_5km}`;
@@ -212,7 +235,7 @@ export class DisplayInfo {
         const runner_name: string = `${runner.first_name} ${runner.last_name}`;
         HTMLObject.children[
           i
-        ].textContent = `${runner_name} (ID: ${runner.runner_id}) - ${runner.stats_per_race_type[race_parameter].points} pts - ${runner.stats_per_race_type[race_parameter].golds} golds - ${runner.stats_per_race_type[race_parameter].silvers} silvers - ${runner.stats_per_race_type[race_parameter].points} bronzes`;
+        ].textContent = `${runner_name} (ID: ${runner.runner_id}) - ${runner.stats_per_race_type[race_parameter].points} pts - ${runner.stats_per_race_type[race_parameter].golds} golds - ${runner.stats_per_race_type[race_parameter].silvers} silvers - ${runner.stats_per_race_type[race_parameter].bronzes} bronzes`;
       }
     }
   }

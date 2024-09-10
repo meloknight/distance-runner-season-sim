@@ -8,6 +8,7 @@
 
   --primary-text-color: rgb(65, 65, 65);
   --primary-background-color: rgb(238, 227, 181);
+  --highlight-color-1: rgb(224, 207, 255);
 }
 
 body {
@@ -18,8 +19,8 @@ body {
 }
 
 #content-container {
-  width: 900px;
-  max-width: 900px;
+  width: 800px;
+  max-width: 800px;
 }
 
 #page-title {
@@ -37,27 +38,92 @@ section {
 #how-it-works-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 #how-it-works-list {
   display: none;
 }
 
-button {
+button,
+#form-submit {
   padding: 8px 14px;
   border-radius: 7px;
   border: 1px solid var(--primary-text-color);
-  background-color: var(--primary-background-color);
+  background-color: var(--highlight-color-1);
   color: var(--primary-text-color);
 }
-button:hover {
+
+button:hover,
+#form-submit:hover {
   background-color: grey;
 }
-button:active {
-  background-color: rgb(255, 101, 101);
+button:active,
+#form-submit:active {
+  background-color: rgb(220, 80, 255);
+}
+
+#user-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#year-label {
+  font-size: 1.2rem;
+}
+#year {
+  background-color: var(--highlight-color-1);
+  border: 2px solid;
+  border-radius: 5px;
+  padding: 5px;
+  text-align: center;
+  margin-left: 10px;
+}
+
+#runner-review > h2 {
+  text-align: center;
+}
+.runner-review-section {
+  /* border: 2px solid green; */
+}
+#runner-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+  padding: 16px 0;
+  gap: 16px;
+}
+#team-select {
+  width: 250px;
+  max-width: 250px;
+  background-color: var(--highlight-color-1);
+  padding: 5px;
+  margin-left: 8px;
+  border-radius: 5px;
+}
+#runner-select {
+  width: 250px;
+  max-width: 250px;
+  background-color: var(--highlight-color-1);
+  padding: 5px;
+  margin-left: 8px;
+  border-radius: 5px;
+}
+#runner-review-display {
+  padding: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+#runner-review-display > div {
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 li {
-  /* list-style: none; */
   margin: 20px;
 }

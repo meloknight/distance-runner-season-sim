@@ -41,7 +41,44 @@ document.addEventListener("DOMContentLoaded", () => {
     const displayInfo1 = new DisplayInfo(conference1, score_info);
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // const runnerReview = document.getElementById("runner-review");
+
+    const teamSelect = document.getElementById("team-select");
+    teamSelect?.addEventListener("change", updateRunnerSelect);
+
+    function updateRunnerSelect(e: Event): void {
+      if (e.target) {
+        const selected_team_id = e.target.value;
+        const runnerSelect = document.getElementById("runner-select");
+        if (runnerSelect) {
+          runnerSelect.innerHTML =
+            '<option value="">-- Select a runner --</option>';
+        }
+        const chosenTeam = conference1.generated_conference.filter(
+          (team) => team.team_id == selected_team_id
+        )[0];
+        for (let i = 0; i < chosenTeam.team_members.length; i++) {
+          const runner = chosenTeam.team_members[i];
+          const runner_option = document.createElement("option");
+          runner_option.value = runner.runner_id.toString();
+          runner_option.text = `${runner.first_name} ${runner.last_name} (ID: ${runner.runner_id})`;
+          runnerSelect?.appendChild(runner_option);
+        }
+      }
+    }
+
+    const runnerSelect = document.getElementById("runner-select");
+    if (runnerSelect) {
+      runnerSelect.innerHTML =
+        '<option value="">-- Select a runner --</option>';
+      runnerSelect.addEventListener("change", function (e: Event): void {
+        if (e.target) {
+          const selected_runner_id = e.target.value;
+          console.log(selected_runner_id);
+
+          displayInfo1.displayRunnerReview(selected_runner_id);
+        }
+      });
+    }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   });
@@ -64,11 +101,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // const displayInfo1 = new DisplayInfo(conference1, score_info);
 
 // Current todo!
-// - Consider having the Running Season Info as a pop-in from the side?
 // - Look at possibly adding a loading animation or running dude or something? (something kinda flashy for the people)
 // - Look at creating a form for users to choose year, runner name, etc
 // - Look at creating a selection section to choose specific racers and teams to get details on
 // - Look into storing the Needed objects in localStorage and allowing
 //    the user to reset the simulation if they want to.
 // - Choose random runner to display and give option to pull up info about any runner?
-// - Animate the "How it works" section expand/collapse if you want
