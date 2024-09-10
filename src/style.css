@@ -5,26 +5,56 @@
   margin: 0;
   padding: 0;
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+
+  --primary-text-color: rgb(65, 65, 65);
+  --primary-background-color: rgb(238, 227, 181);
 }
 
 body {
   padding: 40px 80px;
-  background-color: rgb(251, 255, 200);
+  background-color: var(--primary-background-color);
+  display: flex;
+  justify-content: center;
+}
+
+#content-container {
+  width: 900px;
+  max-width: 900px;
 }
 
 #page-title {
-  color: #4c0065;
+  color: var(--primary-text-color);
 }
 
 section {
   margin-top: 40px;
-  color: #4c0065;
-  border: 1px solid black;
+  color: var(--primary-text-color);
+  border: 1px solid var(--primary-text-color);
   padding: 20px;
   border-radius: 20px;
 }
 
-#season-info {
+#how-it-works-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+#how-it-works-list {
+  display: none;
+}
+
+button {
+  padding: 8px 14px;
+  border-radius: 7px;
+  border: 1px solid var(--primary-text-color);
+  background-color: var(--primary-background-color);
+  color: var(--primary-text-color);
+}
+button:hover {
+  background-color: grey;
+}
+button:active {
+  background-color: rgb(255, 101, 101);
 }
 
 li {

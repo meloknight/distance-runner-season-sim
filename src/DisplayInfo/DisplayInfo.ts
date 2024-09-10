@@ -7,6 +7,8 @@ export class DisplayInfo {
   private conference: ConferenceInterface;
   private ScoreInformation: ScoreInformationInterface;
 
+  // private chosenRunnerName: HTMLElement | null;
+
   private overallTop3RunnersUL: HTMLElement | null;
   private overallTop3TeamsUL: HTMLElement | null;
   private top3Teams5kmUL: HTMLElement | null;
@@ -26,6 +28,9 @@ export class DisplayInfo {
   ) {
     this.conference = conference;
     this.ScoreInformation = ScoreInformation;
+
+    // this.chosenRunnerName = document.getElementById("runner-review-name");
+
     this.overallTop3TeamsUL = document.getElementById("overall-top-3-teams");
     this.overallTop3RunnersUL = document.getElementById(
       "overall-top-3-runners"
@@ -48,6 +53,9 @@ export class DisplayInfo {
     this.top3Runners100MileUL = document.getElementById(
       "100mile-top-3-runners"
     );
+
+    // display summarized information
+    this.displayRunnerReview(1002);
     this.displayOverallTop3Teams();
     this.displayRaceTypeTop3Teams(
       this.top3Teams5kmUL,
@@ -100,6 +108,82 @@ export class DisplayInfo {
       "100 mile",
       this.ScoreInformation.runner_100mile_stats
     );
+  }
+
+  private displayRunnerReview(runner_id: number): void {
+    const chosenRunnerID = document.getElementById("runner-review-id");
+    const chosenRunnerName = document.getElementById("runner-review-name");
+    const chosenRunnerAge = document.getElementById("runner-review-age");
+    const chosenRunnerTeam = document.getElementById("runner-review-team");
+    const chosenRunnerPoints = document.getElementById("runner-review-points");
+    const chosenRunnerGolds = document.getElementById("runner-review-golds");
+    const chosenRunnerSilvers = document.getElementById(
+      "runner-review-silvers"
+    );
+    const chosenRunnerBronzes = document.getElementById(
+      "runner-review-bronzes"
+    );
+    const skillClass5km = document.getElementById("runner-review-5km-sc");
+    const skillClass10km = document.getElementById("runner-review-10km-sc");
+    const skillClassHalfMarathon = document.getElementById(
+      "runner-review-half-marathon-sc"
+    );
+    const skillClassMarathon = document.getElementById(
+      "runner-review-marathon-sc"
+    );
+    const skillClass100mile = document.getElementById(
+      "runner-review-100mile-sc"
+    );
+
+    const chosen_runner = this.conference.all_runners.filter(
+      (runner) => runner.runner_id === runner_id
+    )[0];
+    if (chosenRunnerName) {
+      chosenRunnerName.textContent = `Name: ${chosen_runner.first_name} ${chosen_runner.last_name}`;
+    }
+    if (chosenRunnerID) {
+      chosenRunnerID.textContent = `Runner ID: ${chosen_runner.runner_id}`;
+    }
+    if (chosenRunnerAge) {
+      chosenRunnerAge.textContent = `Age: ${chosen_runner.age}`;
+    }
+
+    const runner_team_id = Math.floor(chosen_runner.runner_id / 1000) * 1000;
+    const runner_team = this.conference.generated_conference.filter(
+      (team) => team.team_id === runner_team_id
+    )[0];
+    const runner_team_name = runner_team.team_name;
+    if (chosenRunnerTeam) {
+      chosenRunnerTeam.textContent = `Team: ${runner_team_name}`;
+    }
+
+    if (chosenRunnerPoints) {
+      chosenRunnerPoints.textContent = `Points: ${chosen_runner.runner_points}`;
+    }
+    if (chosenRunnerGolds) {
+      chosenRunnerGolds.textContent = `Gold(s): ${chosen_runner.golds}`;
+    }
+    if (chosenRunnerSilvers) {
+      chosenRunnerSilvers.textContent = `Silver(s): ${chosen_runner.silvers}`;
+    }
+    if (chosenRunnerBronzes) {
+      chosenRunnerBronzes.textContent = `Bronze(s): ${chosen_runner.bronzes}`;
+    }
+    if (skillClass5km) {
+      skillClass5km.textContent = `5km Skill Class: ${chosen_runner.skill_class_5km}`;
+    }
+    if (skillClass10km) {
+      skillClass10km.textContent = `10km Skill Class: ${chosen_runner.skill_class_10km}`;
+    }
+    if (skillClassHalfMarathon) {
+      skillClassHalfMarathon.textContent = `Half Marathon Skill Class: ${chosen_runner.skill_class_half_marathon}`;
+    }
+    if (skillClassMarathon) {
+      skillClassMarathon.textContent = `Marathon Skill Class: ${chosen_runner.skill_class_marathon}`;
+    }
+    if (skillClass100mile) {
+      skillClass100mile.textContent = `100mile Skill Class: ${chosen_runner.skill_class_100mile}`;
+    }
   }
 
   private displayRaceTypeTop3Teams(
