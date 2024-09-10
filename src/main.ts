@@ -6,7 +6,6 @@ import { DisplayInfo } from "./DisplayInfo/DisplayInfo";
 
 const revealButton = document.getElementById("how-it-works-reveal-button");
 const howItWorksList = document.getElementById("how-it-works-list");
-console.log("hello");
 
 revealButton?.addEventListener("click", () => {
   if (howItWorksList) {
