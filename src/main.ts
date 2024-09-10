@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const teamSelect = document.getElementById("team-select");
     teamSelect?.addEventListener("change", updateRunnerSelect);
 
-    function updateRunnerSelect(e: Event): void {
+    function updateRunnerSelect(e: any): void {
       if (e.target) {
         const selected_team_id = e.target.value;
         const runnerSelect = document.getElementById("runner-select");
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (runnerSelect) {
       runnerSelect.innerHTML =
         '<option value="">-- Select a runner --</option>';
-      runnerSelect.addEventListener("change", function (e: Event): void {
+      runnerSelect.addEventListener("change", function (e: any): void {
         if (e.target) {
           const selected_runner_id = e.target.value;
           console.log(selected_runner_id);
