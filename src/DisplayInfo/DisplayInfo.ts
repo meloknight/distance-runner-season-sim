@@ -53,7 +53,7 @@ export class DisplayInfo {
     );
 
     // display summarized information
-    // this.displayRunnerReview(1002);
+    this.displayRunnerReview(conference.all_runners[0].runner_id);
     this.updateTeamSelect();
     this.displayOverallTop3Teams();
     this.displayRaceTypeTop3Teams(
